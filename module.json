@@ -1,0 +1,22 @@
+{
+  "name": "lwm2m-client-linux-example",
+  "version": "0.0.1",
+  "description": "LWM2M Client Example for Linux",
+  "private": true,
+  "keywords": [
+    "lwm2m-client"
+  ],
+  "author": "yogesh.pande@arm.com",
+  "licenses": [
+    {
+      "url": "https://spdx.org/licenses/Apache-2.0",
+      "type": "Apache-2.0"
+    }
+  ],
+  "extraIncludes": [],
+  "dependencies": {
+    "lwm2m-client": "~0.1.5"
+  },
+  "targetDependencies": {},
+  "bin": "./source/"
+}
