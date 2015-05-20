@@ -3,17 +3,19 @@
 This document describes briefly the steps required to start using the LWM2M Client example application on Linux platform. The LWM2M Client example application demonstrates how to register, unregister, read resource values and send resource observations to the mbed Device Server.
 
 ## Required hardware
+
 * 64 bit Ubuntu/XUbuntu OS desktop environment 
 
 ## Required software
 
-* [Yotta](http://docs.yottabuild.org/#installing) - to build the example programs.
-* [mbed Device Server (mDS)](#download-mbed-device-server-mds) - mbed Device Server, where LWM2M client example connects. 
+* [yotta](http://docs.yottabuild.org/#installing) - to build the example programs.
+* [mbed Device Server (mDS)](#download-mbed-device-server-mds) - the LWM2M Client example connects to mDS.
 
 ## Optional software
 * [Wireshark](https://www.wireshark.org/) - for packet inspection/network debugging.
 
 ## Setting up the environment
+
 To set up the environment, you will need to do the following:
 
 1. Download and run mDS server on computer.
@@ -47,7 +49,8 @@ Ref Apps.tar.gz
 		
 This will start the mbed Device Server on your system.
 		
-### Starting the WebUI ("Lighting" reference app)		
+### Starting the WebUI ("Lighting" reference app)
+
 1. Go to the `bin` folder in the lighting reference app that you downloaded.
 2. Run the start script:	
     - If you are using Linux OS, run the `runLighting.sh` in a new shell.	
@@ -57,21 +60,22 @@ This will start the WebUI on your system.
 		
 ## mbed Build instructions		
 		
-### Building		
-1. Install Yotta. See instructions [here](http://docs.yottabuild.org/#installing).
+### Building
+
+1. Install yotta. See instructions [here](http://docs.yottabuild.org/#installing).
 2. Install the necessary toolchains (`arm-none-eabi-gcc`). Refer to the yotta installation instructions (in step 3) to learn how to install the toolchains.
 3. Clone the **lwm2m-client-example** [repository](https://github.com/ARMmbed/lwm2m-client-example) to your local file system.
-4. In the command prompt, `cd` **lwm2m-client-example**.
+4. In the command prompt, `cd lwm2m-client-example`.
 5. Open file `main.cpp`, edit your mbed Device Server's Ipv4 address and port number in place of `coap://<xxx.xxx.xxx.xxx>:5683`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1:5683`.
 6. Set up the target device, `yotta target x86-linux-native`.
 7. In the command prompt, type `yotta build`. The executable file will be created to `/build/x86-linux-native/source/` folder.
 
-### Running the lwm2m client example
+### Running the LWM2M Client example
 
 1. Find the executable file named `lwm2m-client-example.exe` in the folder `lwm2m-client-example/build/x86-linux-native/source/`. 
 2. Run the executable from command line using `./lwm2m-client-example`
 3. The program begins execution and will start registration to the mbed Device Server giving console output as `Registering endpoint` and when the registration is successful it will display `Registered`.
-4. After successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` alongwith the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Device Server WebUI under **/Test/0/D** tab resource.
+4. After a successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` along with the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Device Server WebUI under **/Test/0/D** resource.
 
 ## Testing
 
@@ -84,7 +88,7 @@ This will start the WebUI on your system.
   - For example, if your server's IP address is `123.123.123.123`, you would enter `ip.addr == 123.123.123.123` and press Enter.
 5. Power up your mbed board and press the **RESET** button.
 
-You should see the endpoint after it has registered with the mbed Device Server.
+You should see the endpoint once it has registered with the mbed Device Server.
 
 ### Testing the LWM2M Client example application with the mbed Device Server
 
@@ -117,4 +121,4 @@ The **/Test/0/S** represents the static resource that is a fixed value set in th
 
 ![Static Resource](img/static_resource.jpg)
 
-To stop and unregister the lwm2m client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint`.This will send an unregister message to mbed Device Server. After a successful unregistration, the console will display `Unregistration done --> exiting` and it will terminate the program.Also, the endpoint will disappear from endpoint list in WebUI.
+To stop and unregister the LWM2M Client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint`.This will send an unregister message to mbed Device Server. After a successful unregistration, the console will display `Unregistration done --> exiting` and it will terminate the program. Also, the endpoint will disappear from the endpoint list of the WebUI.
