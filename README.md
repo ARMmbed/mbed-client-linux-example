@@ -62,7 +62,7 @@ This will start the WebUI on your system.
 ### Building
 
 1. Install yotta. See instructions [here](http://docs.yottabuild.org/#installing).
-2. Install the necessary toolchains (`arm-none-eabi-gcc`). Refer to the yotta installation instructions (in step 3) to learn how to install the toolchains.
+2. Install the necessary toolchains. Refer to the yotta installation instructions (in step 3) to learn how to install the toolchains.
 3. In the command prompt, `cd lwm2m-client-example`.
 4. Open file `main.cpp`, edit your mbed Device Server's Ipv4 address and port number in place of `coap://<xxx.xxx.xxx.xxx>:5683`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1:5683`.
 5. Set up the target device, `yotta target x86-linux-native`.
