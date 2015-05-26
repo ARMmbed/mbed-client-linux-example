@@ -11,9 +11,7 @@
 #include "lwm2m-client/m2mobjectinstance.h"
 #include "lwm2m-client/m2mresource.h"
 
-
-const String &BOOTSTRAP_SERVER_ADDRESS = "coap://10.45.3.10:5693";
-const String &M2M_SERVER_ADDRESS = "coap://10.45.3.10:5683";
+const String &M2M_SERVER_ADDRESS = "coap://<xxx.xxx.xxx.xxx>:5683";
 const String &MANUFACTURER = "manufacturer";
 const String &TYPE = "type";
 const String &MODEL_NUMBER = "2015";
@@ -32,7 +30,6 @@ public:
         _interface = NULL;
         _device = NULL;
         _object = NULL;
-        _bootstrapped = false;
         _error = false;
         _registered = false;
         _unregistered = false;
@@ -72,13 +69,6 @@ public:
         return (_interface == NULL) ? false : true;
     }
 
-    bool bootstrap_successful() {
-        while(!_bootstrapped && !_error) {
-            sleep(1);
-        }
-        return _bootstrapped;
-    }
-
     bool register_successful() {
         while(!_registered && !_error) {
             sleep(1);
@@ -99,27 +89,6 @@ public:
         return _registration_updated;
     }
 
-    bool create_bootstrap_object() {
-        bool success = false;
-        if(_security) {
-            delete _security;
-        }
-        _security = M2MInterfaceFactory::create_security(M2MSecurity::Bootstrap);
-        if(_security) {
-            if(_security->set_resource_value(M2MSecurity::M2MServerUri, BOOTSTRAP_SERVER_ADDRESS) &&
-            _security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity)) {
-                success = true;
-                /* Not used now because there is no TLS or DTLS implementation available for stack.
-                security->set_resource_value(M2MSecurity::ServerPublicKey,certificates->certificate_ptr[0],certificates->certificate_len[0]);
-                security->set_resource_value(M2MSecurity::PublicKey,certificates->certificate_ptr[1],certificates->certificate_len[1]);
-                security->set_resource_value(M2MSecurity::Secretkey,certificates->own_private_key_ptr,certificates->own_private_key_len);
-                */
-            }
-        }
-        printf("Bootstrap Server Address %s\n", BOOTSTRAP_SERVER_ADDRESS.c_str());
-        return success;
-    }
-
     bool create_register_object() {
         bool success = false;
         _register_security = M2MInterfaceFactory::create_security(M2MSecurity::M2MServer);
@@ -128,18 +97,9 @@ public:
             _register_security->set_resource_value(M2MSecurity::BootstrapServer, 0) &&
             _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity)) {
                 success = true;
-                /* Not used now because there is no TLS or DTLS implementation available for stack.
-                security->set_resource_value(M2MSecurity::ServerPublicKey,certificates->certificate_ptr[0],certificates->certificate_len[0]);
-                security->set_resource_value(M2MSecurity::PublicKey,certificates->certificate_ptr[1],certificates->certificate_len[1]);
-                security->set_resource_value(M2MSecurity::Secretkey,certificates->own_private_key_ptr,certificates->own_private_key_len);
-                */
             }
         }
         return success;
-    }
-
-    void test_bootstrap() {
-        _interface->bootstrap(_security);
     }
 
     bool create_device_object() {
@@ -170,7 +130,7 @@ public:
         if(_object) {
             M2MObjectInstance* inst = _object->create_object_instance();
             if(inst) {
-                M2MResource* res = inst->create_dynamic_resource("Dynamic","ResourceTest",true);
+                M2MResource* res = inst->create_dynamic_resource("D","ResourceTest",true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                   res->set_operation(M2MBase::GET_PUT_POST_ALLOWED);
@@ -178,7 +138,7 @@ public:
                                  (const uint32_t)size);
                   res->set_execute_function(execute_callback(this,&M2MLWClient::execute_function));
                 _value++;
-                inst->create_static_resource("Static",
+                inst->create_static_resource("S",
                                              "ResourceTest",
                                              STATIC_VALUE,
                                              sizeof(STATIC_VALUE)-1);
@@ -191,7 +151,7 @@ public:
         if(_object) {
             M2MObjectInstance* inst = _object->object_instance();
             if(inst) {
-                M2MResource* res = inst->resource("Dynamic");
+                M2MResource* res = inst->resource("D");
                 printf(" Value sent %d\n", _value);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
@@ -222,14 +182,7 @@ public:
         _interface->unregister_object(NULL);
     }
 
-    void bootstrap_done(M2MSecurity *server_object){
-    if(server_object) {
-            _register_security = server_object;
-            _bootstrapped = true;
-            printf("\nBootstrapped\n");
-            printf("mDS Address %s\n",
-                   _register_security->resource_value_string(M2MSecurity::M2MServerUri).c_str());
-        }
+    void bootstrap_done(M2MSecurity */*server_object*/){
     }
 
     void object_registered(M2MSecurity */*security_object*/, const M2MServer &/*server_object*/){
@@ -266,23 +219,12 @@ private:
     M2MSecurity         *_register_security;
     M2MDevice           *_device;
     M2MObject           *_object;
-    bool                _bootstrapped;
     bool                _error;
     bool                _registered;
     bool                _unregistered;
     bool                _registration_updated;
     int                 _value;
 };
-
-void* wait_for_bootstrap(void* arg) {
-    M2MLWClient *client;
-    client = (M2MLWClient*) arg;
-    if(client->bootstrap_successful()) {
-        printf("Registering endpoint\n");
-        client->test_register();
-    }
-    return NULL;
-}
 
 void* wait_for_unregister(void* arg) {
     M2MLWClient *client;
@@ -324,7 +266,6 @@ static void ctrl_c_handle_function(void)
 
 int main() {
 
-    pthread_t bootstrap_thread;
     pthread_t unregister_thread;
     pthread_t observation_thread;
     M2MLWClient lwm2mclient;
@@ -337,9 +278,9 @@ int main() {
     if(true == result) {
         printf("\nInterface created\n");
     }
-    result = lwm2mclient.create_bootstrap_object();
+    result = lwm2mclient.create_register_object();
     if(true == result) {
-        printf("Bootstrap object created");
+        printf("register object created");
     }
 
     result = lwm2mclient.create_device_object();
@@ -353,17 +294,14 @@ int main() {
         printf("\nGeneric object created\n");
     }
 
-    printf("Bootstrapping endpoint\n");
-    lwm2mclient.test_bootstrap();
+    printf("Registering endpoint\n");
+    lwm2mclient.test_register();
 
-    pthread_create(&bootstrap_thread, NULL, &wait_for_bootstrap, (void*) &lwm2mclient);
     pthread_create(&observation_thread, NULL, &send_observation, (void*) &lwm2mclient);
     pthread_create(&unregister_thread, NULL, &wait_for_unregister, (void*) &lwm2mclient);
 
-    pthread_join(bootstrap_thread, NULL);
     pthread_join(unregister_thread, NULL);
 
-    pthread_detach(bootstrap_thread);
     pthread_detach(unregister_thread);
 
     return 0;
