@@ -70,7 +70,7 @@ This will start the WebUI on your system.
 
 ### Running the LWM2M Client example
 
-1. Find the executable file named `lwm2m-client-example.exe` in the folder `lwm2m-client-example/build/x86-linux-native/source/`. 
+1. Find the executable file named `lwm2m-client-example` in the folder `lwm2m-client-example/build/x86-linux-native/source/`.
 2. Run the executable from command line using `./lwm2m-client-example`
 3. The program begins execution and will start registration to the mbed Device Server giving console output as `Registering endpoint` and when the registration is successful it will display `Registered`.
 4. After a successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` along with the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Device Server WebUI under **/Test/0/D** resource.

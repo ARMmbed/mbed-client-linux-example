@@ -167,19 +167,27 @@ public:
         M2MObjectList object_list;
         object_list.push_back(_device);
         object_list.push_back(_object);
-
-        _interface->register_object(_register_security,object_list);
+	if(_interface) {
+            _interface->register_object(_register_security,object_list);
+        } else {
+	    printf("Interface doesn't exist, exiting!!\n");
+            exit(1);
+	}
     }
 
     void test_update_register() {
         uint32_t updated_lifetime = 20;
         _registered = false;
         _unregistered = false;
-        _interface->update_registration(_register_security,updated_lifetime);
+        if(_interface) {
+            _interface->update_registration(_register_security,updated_lifetime);
+        }
     }
 
     void test_unregister() {
-        _interface->unregister_object(NULL);
+        if(_interface) {
+            _interface->unregister_object(NULL);
+        }
     }
 
     void bootstrap_done(M2MSecurity */*server_object*/){
