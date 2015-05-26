@@ -21,11 +21,10 @@ To set up the environment, you will need to do the following:
 1. Download and run mDS server on computer.
 2. Configure the LWM2M Client example program with the server address.
 3. Build the application with Yotta.
-4. Load the application to the FRDM-K64F board.
-5. Plug the ethernet cable to the board.
-6. Verify that the board communicates with the server.
+4. Run the application from the command prompt.
 
 **Note:** You might need to open UDP port 5683 in your computer firewall for mDS to communicate with this example application.
+**Note:** You should change your computer's Connection Settings from `NAT Firewall` to `Bridged` else you might notice that the incoming UDP packets starts dropping after few minutes. 
 
 ### Downloading mbed Device Server (mDS)
 
