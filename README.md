@@ -24,7 +24,7 @@ To set up the environment, you will need to do the following:
 4. Run the application from the command prompt.
 
 **Note:** You might need to open UDP port 5683 in your computer firewall for mDS to communicate with this example application.
-**Note:** You should change your computer's Connection Settings from `NAT Firewall` to `Bridged` else you might notice that the incoming UDP packets starts dropping after few minutes. 
+**Note:** In case you are running Ubuntu on virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged` else you might notice that the incoming UDP packets starts dropping after few minutes. 
 
 ### Downloading mbed Device Server (mDS)
 
@@ -43,8 +43,8 @@ Ref Apps.tar.gz
 
 1. Go to the `bin` folder of the Device Server package that you downloaded.
 2. Run the start script:
-    - If you are using Linux OS, run the `runDS.sh` in a new shell.
-    - If you are using Windows, run the `runDS.bat` in a new command prompt.
+    - If you are running mDS on Linux OS, run the `runDS.sh` in a new shell.
+    - If you are running mDS on Windows, run the `runDS.bat` in a new command prompt.
 		
 This will start the mbed Device Server on your system.
 		
@@ -52,8 +52,8 @@ This will start the mbed Device Server on your system.
 
 1. Go to the `bin` folder in the Connected-home-trial reference app that you downloaded.
 2. Run the start script:	
-    - If you are using Linux OS, run the `runConnectedHome.sh` in a new shell.	
-    - If you are using Windows, run the `runConnectedHome.bat` in a new command prompt.	
+    - If you are running mDS on Linux OS, run the `runConnectedHome.sh` in a new shell.	
+    - If you are running mDS on Windows, run the `runConnectedHome.bat` in a new command prompt.	
 		
 This will start the WebUI on your system.	
 		
@@ -63,15 +63,15 @@ This will start the WebUI on your system.
 
 1. Install yotta. See instructions [here](http://docs.yottabuild.org/#installing).
 2. Install the necessary toolchains. Refer to the yotta installation instructions (in step 3) to learn how to install the toolchains.
-3. In the command prompt, `cd lwm2m-client-example`.
-4. Open file `main.cpp`, edit your mbed Device Server's Ipv4 address and port number in place of `coap://<xxx.xxx.xxx.xxx>:5683`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1:5683`.
+3. In the command prompt, `cd lwm2m-client-linux-example`.
+4. Open file `source/main.cpp`, edit your mbed Device Server's Ipv4 address and port number in place of `coap://<xxx.xxx.xxx.xxx>:5683`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1:5683`.
 5. Set up the target device, `yotta target x86-linux-native`.
-6. In the command prompt type `yotta build`. The executable file will be created to `/build/x86-linux-native/source/` folder.
+6. In the command prompt type `yotta build`. The executable file will be created to `build/x86-linux-native/source/` folder.
 
 ### Running the LWM2M Client example
 
-1. Find the executable file named `lwm2m-client-example` in the folder `lwm2m-client-example/build/x86-linux-native/source/`.
-2. Run the executable from command line using `./lwm2m-client-example`
+1. Find the executable file named `lwm2m-client-linux-example` in the folder `lwm2m-client-linux-example/build/x86-linux-native/source/`.
+2. Run the executable from command line using `./lwm2m-client-linux-example`
 3. The program begins execution and will start registration to the mbed Device Server giving console output as `Registering endpoint` and when the registration is successful it will display `Registered`.
 4. After a successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` along with the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Device Server WebUI under **/Test/0/D** resource.
 
@@ -84,7 +84,9 @@ This will start the WebUI on your system.
 3. Click **Start**.
 4. Select the "Filter" field in the toolbar and add a filter to correspond to your mbed Device Server. Press Enter after you have entered the expression to activate the filter.
   - For example, if your server's IP address is `123.123.123.123`, you would enter `ip.addr == 123.123.123.123` and press Enter.
-5. Power up your mbed board and press the **RESET** button.
+5. Run your example application from command line.
+
+**Note** If you are running mDS on same host as the example application then you have to select loopback interface in wireshark.
 
 You should see the endpoint once it has registered with the mbed Device Server.
 
@@ -92,7 +94,7 @@ You should see the endpoint once it has registered with the mbed Device Server.
 
 Ensure that the mDS and the WebUI are running (see [Setting up the environment](#setting-up-the-environment)). Also, ensure that the program is running on your linux desktop (see [Running the lwm2m client example](#running-the-lwm2m-client-example)).
 
-Step 1: To open the WebUI, navigate to `http://localhost:8083`.
+Step 1: To open the WebUI, navigate to `http://localhost:8082`.
     - If you are working from a remote machine, you need to use the host machine's IP address instead of "localhost".
 
 Step 2: Enter `demo` as both the username and password.
