@@ -238,8 +238,7 @@ void* wait_for_unregister(void* arg) {
     M2MLWClient *client;
     client = (M2MLWClient*) arg;
     if(client->unregister_successful()) {
-        printf("Unregistered done --> exiting\n");
-        exit(1);
+        printf("Unregistered done\n");
     }
     return NULL;
 }
@@ -267,8 +266,9 @@ static M2MLWClient *m2mclient = NULL;
 static void ctrl_c_handle_function(void)
 {
     if(m2mclient && m2mclient->register_successful()) {
-        printf("Unregistering endpoint\n");
+        printf("\nUnregistering endpoint and EXITING Program\n");
         m2mclient->test_unregister();
+	exit(1);
     }
 }
 
@@ -277,6 +277,12 @@ int main() {
     pthread_t unregister_thread;
     pthread_t observation_thread;
     M2MLWClient lwm2mclient;
+
+    if(M2M_SERVER_ADDRESS.compare(7,17,"<xxx.xxx.xxx.xxx>") == 0) {
+        printf("You don't have a valid Device Server Address, remember to update MBED_SERVER_ADDRESS !!!!!\n ");
+        printf("EXITING program\n");
+        exit(1);
+    }
 
     m2mclient = &lwm2mclient;
 
