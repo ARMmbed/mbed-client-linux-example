@@ -10,7 +10,7 @@ This document describes briefly the steps required to start using the LWM2M Clie
 ## Required software
 
 * [yotta](http://docs.yottabuild.org/#installing) - to build the example programs.
-* [mbed Device Server (mDS)](#download-mbed-device-server-mds) - the LWM2M Client example connects to mDS.
+* [mbed Device Server (mDS)](#download-mbed-device-server-mds) version 2.2 or later - the LWM2M Client example connects to mDS.
 
 ## Optional software
 * [Wireshark](https://www.wireshark.org/) - for packet inspection/network debugging.
@@ -20,9 +20,10 @@ This document describes briefly the steps required to start using the LWM2M Clie
 To set up the environment, you will need to do the following:
 
 1. Download and run mDS server on computer.
-2. Configure the LWM2M Client example program with the server address.
-3. Build the application with Yotta.
-4. Run the application from the command prompt.
+2. Download and run mbed Connected Home on computer.
+3. Configure the LWM2M Client example program with the server address.
+4. Build the application with Yotta.
+5. Run the application from the command prompt.
 
 **Note:** You might need to open UDP port 5683 in your computer firewall for mDS to communicate with this example application.
 **Note:** In case you are running Ubuntu on virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged` else you might notice that the incoming UDP packets starts dropping after few minutes. 
@@ -74,7 +75,7 @@ This will start the WebUI on your system.
 1. Find the executable file named `lwm2m-client-linux-example` in the folder `lwm2m-client-linux-example/build/x86-linux-native/source/`.
 2. Run the executable from command line using `./lwm2m-client-linux-example`
 3. The program begins execution and will start registration to the mbed Device Server giving console output as `Registering endpoint` and when the registration is successful it will display `Registered`.
-4. After a successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` along with the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Device Server WebUI under **/Test/0/D** resource.
+4. After a successful registration, the program will automatically start sending observations after every 10 seconds and it will be visible on console as `Sending observation` along with the value which increments everytime the obeservation is sent like `Value sent 1` and so on. These values can be observed on mbed Connected Home under **/Test/0/D** resource.
 
 ## Testing
 
@@ -93,9 +94,9 @@ You should see the endpoint once it has registered with the mbed Device Server.
 
 ### Testing the LWM2M Client example application with the mbed Device Server
 
-Ensure that the mDS and the WebUI are running (see [Setting up the environment](#setting-up-the-environment)). Also, ensure that the program is running on your linux desktop (see [Running the lwm2m client example](#running-the-lwm2m-client-example)).
+Ensure that the mDS and the mbed Connected Home are running (see [Setting up the environment](#setting-up-the-environment)). Also, ensure that the example application is running on your linux desktop (see [Running the lwm2m client example](#running-the-lwm2m-client-example)).
 
-Step 1: To open the WebUI, navigate to `http://localhost:8082`.
+Step 1: To open the mbed Connected Home, navigate to `http://localhost:8082`.
     - If you are working from a remote machine, you need to use the host machine's IP address instead of "localhost".
 
 Step 2: Enter `demo` as both the username and password.
@@ -108,13 +109,13 @@ Step 4: Click the endpoint name to view the registered resources.
 
 ![Resource list](img/endpoint_resources.jpg)
 
-Step 5: To make a CoAP request to node resources, click **Read**.
+Step 5: To make a CoAP request to endpoints resource, click **Read**.
 
 ![Read resources](img/read_resources.jpg)
 
 The **/Test** tab contains resources demonstrating dynamic and static resource functionality. 
 
-The **/Test/0/D** represents the dynamic resource observed by the mbed Device Server. It is linked with the program as it is automatically sending observations after every 10 seconds (once the registration is done). The values are updated to the UI without a need to press **Read**.
+The **/Test/0/D** represents the dynamic resource observed by the mbed Device Server. It is linked with the example application as it is automatically sending observations after every 10 seconds (once the registration is done). The values are updated to the UI without a need to press **Read**.
 
 ![Dynamic Resource](img/dynamic_resource.jpg)
 
@@ -122,4 +123,4 @@ The **/Test/0/S** represents the static resource that is a fixed value set in th
 
 ![Static Resource](img/static_resource.jpg)
 
-To stop and unregister the LWM2M Client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint`.This will send an unregister message to mbed Device Server. After a successful unregistration, the console will display `Unregistration done --> exiting` and it will terminate the program. Also, the endpoint will disappear from the endpoint list of the WebUI.
+To stop and unregister the LWM2M Client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint`.This will send an unregister message to mbed Device Server. After a successful unregistration, the console will display `Unregistration done --> exiting` and it will terminate the program. Also, the endpoint will disappear from the endpoint list of the mbed Connected Home.
