@@ -123,4 +123,4 @@ The **/Test/0/S** represents the static resource that is a fixed value set in th
 
 ![Static Resource](img/static_resource.jpg)
 
-To stop and unregister the LWM2M Client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint`.This will send an unregister message to mbed Device Server. After a successful unregistration, the console will display `Unregistration done --> exiting` and it will terminate the program. Also, the endpoint will disappear from the endpoint list of the mbed Connected Home.
+To stop and unregister the LWM2M Client example, you need to interrupt the program by selecting CTRL+C, for which the console will display `Unregistering endpoint....`.This will send an unregister message to mbed Device Server. After this,  console will display `EXITING Program` and it will terminate the program. Also, the endpoint will disappear from the endpoint list of the mbed Connected Home.

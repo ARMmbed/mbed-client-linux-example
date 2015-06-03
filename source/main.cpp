@@ -57,7 +57,7 @@ public:
 
     bool create_interface() {
         _interface = M2MInterfaceFactory::create_interface(*this,
-                                                  "linux-endpoint",
+                                                  "lwm2m-endpoint",
                                                   "test",
                                                   60,
                                                   5683,
@@ -266,10 +266,11 @@ static M2MLWClient *m2mclient = NULL;
 static void ctrl_c_handle_function(void)
 {
     if(m2mclient && m2mclient->register_successful()) {
-        printf("\nUnregistering endpoint and EXITING Program\n");
+        printf("\nUnregistering endpoint....\n");
         m2mclient->test_unregister();
-	exit(1);
     }
+    printf("\nEXITING Program\n");
+    exit(1);
 }
 
 int main() {
@@ -308,7 +309,7 @@ int main() {
         printf("\nGeneric object created\n");
     }
 
-    printf("Registering endpoint\n");
+    printf("Registering endpoint...\n");
     lwm2mclient.test_register();
 
     pthread_create(&observation_thread, NULL, &send_observation, (void*) &lwm2mclient);
