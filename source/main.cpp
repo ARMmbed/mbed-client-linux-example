@@ -10,8 +10,19 @@
 #include "lwm2m-client/m2minterface.h"
 #include "lwm2m-client/m2mobjectinstance.h"
 #include "lwm2m-client/m2mresource.h"
+#include "security.h"
 
-const String &M2M_SERVER_ADDRESS = "coap://<xxx.xxx.xxx.xxx>:5683";
+// Select connection mode: Psk, Certificate or NoSecurity
+M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::Psk;
+
+// Enter your mbed Device Server's IPv4 address and Port number in
+// mentioned format like coap://192.168.0.1
+const String &M2M_SERVER_ADDRESS = "coap://<xxx.xxx.xxx.xxx>";
+//If you use secure connection port is 5684, for non-secure port is 5683
+const int &M2M_SERVER_PORT = 5683;
+
+const String &ENDPOINT_NAME = "lwm2m-endpoint";
+
 const String &MANUFACTURER = "manufacturer";
 const String &TYPE = "type";
 const String &MODEL_NUMBER = "2015";
@@ -45,7 +56,7 @@ public:
             delete _register_security;
         }
         if(_device) {
-            delete _device;
+            M2MDevice::delete_instance();
         }
         if(_object) {
             delete _object;
@@ -57,10 +68,10 @@ public:
 
     bool create_interface() {
         _interface = M2MInterfaceFactory::create_interface(*this,
-                                                  "linux-endpoint",
+                                                  ENDPOINT_NAME,
                                                   "test",
                                                   60,
-                                                  5683,
+                                                  M2M_SERVER_PORT,
                                                   "",
                                                   M2MInterface::UDP,
                                                   M2MInterface::LwIP_IPv4,
@@ -93,9 +104,27 @@ public:
         bool success = false;
         _register_security = M2MInterfaceFactory::create_security(M2MSecurity::M2MServer);
         if(_register_security) {
-            if(_register_security->set_resource_value(M2MSecurity::M2MServerUri, M2M_SERVER_ADDRESS) &&
-            _register_security->set_resource_value(M2MSecurity::BootstrapServer, 0) &&
-            _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity)) {
+            char buffer[6];
+            sprintf(buffer,"%d",M2M_SERVER_PORT);
+            m2m::String port(buffer);
+
+            m2m::String addr = M2M_SERVER_ADDRESS;
+            addr.append(":", 1);
+            addr.append(port.c_str(), size_t(port.size()) );
+            if(_register_security->set_resource_value(M2MSecurity::M2MServerUri, addr)) {
+                if( CONN_MODE == M2MSecurity::Certificate ){
+                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Certificate);
+                    _register_security->set_resource_value(M2MSecurity::ServerPublicKey,SERVER_CERT,sizeof(SERVER_CERT));
+                    _register_security->set_resource_value(M2MSecurity::PublicKey,CERT,sizeof(CERT));
+                    _register_security->set_resource_value(M2MSecurity::Secretkey,KEY,sizeof(KEY));
+                }else if( CONN_MODE == M2MSecurity::Psk ){
+                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Psk);
+                    _register_security->set_resource_value(M2MSecurity::ServerPublicKey,PSK_IDENTITY,sizeof(PSK_IDENTITY));
+                    _register_security->set_resource_value(M2MSecurity::PublicKey,PSK_IDENTITY,sizeof(PSK_IDENTITY));
+                    _register_security->set_resource_value(M2MSecurity::Secretkey,PSK,sizeof(PSK));
+                }else{
+                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity);
+                }
                 success = true;
             }
         }
@@ -121,7 +150,7 @@ public:
             char* arguments = (char*)argument;
             printf("Received %s!!\n", arguments);
         }
-        printf("I am executed !!\n");        
+        printf("I am executed !!\n");
     }
 
     bool create_generic_object() {
@@ -167,12 +196,12 @@ public:
         M2MObjectList object_list;
         object_list.push_back(_device);
         object_list.push_back(_object);
-	if(_interface) {
+    if(_interface) {
             _interface->register_object(_register_security,object_list);
         } else {
-	    printf("Interface doesn't exist, exiting!!\n");
+        printf("Interface doesn't exist, exiting!!\n");
             exit(1);
-	}
+    }
     }
 
     void test_update_register() {
@@ -268,7 +297,7 @@ static void ctrl_c_handle_function(void)
     if(m2mclient && m2mclient->register_successful()) {
         printf("\nUnregistering endpoint and EXITING Program\n");
         m2mclient->test_unregister();
-	exit(1);
+    exit(1);
     }
 }
 
