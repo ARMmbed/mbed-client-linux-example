@@ -63,36 +63,41 @@ This will start the WebUI on your system.
 ## mbed Build instructions		
 		
 ### Building
-There are currently 3 ways to use this example: Non-secure connection, DTLS PSK and DTLS Certificate modes.
-General instructions are same for all modes and the connection mode (step 5.) is split
+You can use this example in any of the following three connection modes:
+
+1. Non-secure mode
+2. DTLS PSK mode
+3. DTLS Certificate mode
+
+The general instructions for all modes are the same. The only difference comes in step 5, when selecting the mode.
 
 #### General 
 1. Install yotta. See instructions [here](http://docs.yottabuild.org/#installing).
-2. Install the necessary toolchains. Refer to the yotta installation instructions (in step 3) to learn how to install the toolchains.
-3. In the command prompt, `cd lwm2m-client-linux-example`.
-4. Open file `source/main.cpp`, edit your mbed Device Server's Ipv4 address and port number in place of `coap://<xxx.xxx.xxx.xxx>`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1`.
+2. Install the necessary toolchains. Refer to the yotta installation instructions (in step 1) to learn how to install the toolchains.
+3. In the command prompt, `cd` **examples** and **lwm2m-client-example**.
+4. Open file `source/main.cpp`, edit your mbed Device Server's Ipv4 address in place of `coap://<xxx.xxx.xxx.xxx>`. For example, if your server's IP address is `192.168.0.1`, you would enter `coap://192.168.0.1`.
 5. Select connection mode from below
 6. Set up the target device, `yotta target x86-linux-native`.
 7. In the command prompt type `yotta build`. The executable file will be created to `build/x86-linux-native/source/` folder.
 
-NOTE!: If Device server does not respond to "Client hello" in secure connection modes, check your settings and restart Device server and WebUI.
+**Note:** If the Device Server does not respond to _Client hello_ in secure connection modes, check your settings and restart the Device Server and the WebUI.
 
 #### Non-secure
-1. Find CONN_MODE and set its value to M2MSecurity::NoSecurity
-2. Find and modify MBED_SERVER_PORT=5683
+1. Set the `CONN_MODE` value to `M2MSecurity::NoSecurity`.
+2. Set `MBED_SERVER_PORT` to `5683`.
 
-#### DTLS PSK (Pre Shared Key)
-1. Find CONN_MODE and set its value to M2MSecurity::Psk
-2. Find and modify MBED_SERVER_PORT=5684
+#### DTLS PSK
+1. Set the `CONN_MODE` value to `M2MSecurity::Psk`.
+2. Set `MBED_SERVER_PORT` to `5684`.
 
 #### DTLS Certificate
-1. Find CONN_MODE and set its value to M2MSecurity::Certificate
-2. Find and modify MBED_SERVER_PORT=5684
-3. Close WebUI and Device server and navigate to <Device server>/conf/ 
-4. Edit deviceserver.properties find "coap.dtls.psk" and set it to false
-5. restart Device server and WebUI
-6. Navigate to https://localhost:8081/security.html give admin as username and passsword
-7. Open tab Security and upload source/cert.pem to "Trusted certificates" list
+1. Set the `CONN_MODE` value to `M2MSecurity::Certificate`.
+2. Set `MBED_SERVER_PORT` to `5684`.
+3. Close the WebUI and Device Server and go to `<Device server>/conf/ `.
+4. In the `deviceserver.properties` file, set `coap.dtls.psk` to `false`.
+5. Restart the Device Server and WebUI.
+6. In the browser, navigate to `https://localhost:8081/security.html` and give **admin** both as the username and the passsword.
+7. Open the **Security** tab and upload `source/cert.pem` to the **Trusted certificates** list.
 
 ### Running the LWM2M Client example
 
@@ -106,9 +111,9 @@ NOTE!: If Device server does not respond to "Client hello" in secure connection 
 ### Logging network traffic (optional)
 
 1. Start Wireshark on the computer where the mbed Device Server is running.
-2. Select your ethernet interface, usually "Local Area Connection".
+2. Select your ethernet interface, usually **Local Area Connection**.
 3. Click **Start**.
-4. Select the "Filter" field in the toolbar and add a filter to correspond to your mbed Device Server. Press Enter after you have entered the expression to activate the filter.
+4. Select the **Filter** field in the toolbar and add a filter to correspond to your mbed Device Server. Press Enter after you have entered the expression to activate the filter.
   - For example, if your server's IP address is `123.123.123.123`, you would enter `ip.addr == 123.123.123.123` and press Enter.
 5. Run your example application from command line.
 
@@ -120,20 +125,20 @@ You should see the endpoint once it has registered with the mbed Device Server.
 
 Ensure that the mDS and the mbed Connected Home are running (see [Setting up the environment](#setting-up-the-environment)). Also, ensure that the example application is running on your linux desktop (see [Running the lwm2m client example](#running-the-lwm2m-client-example)).
 
-Step 1: To open the mbed Connected Home, navigate to `http://localhost:8082`.
+**Step 1**: To open the mbed Connected Home, navigate to `http://localhost:8082`.
     - If you are working from a remote machine, you need to use the host machine's IP address instead of "localhost".
 
-Step 2: Enter `demo` as both the username and password.
+**Step 2**: Enter `demo` as both the username and password.
 
-Step 3: Go to the **End-points** tab. After a short time your device should appear in the list (refresh the page to update the list).
+**Step 3**: Go to the **End-points** tab. After a short time your device should appear in the list (refresh the page to update the list).
 
 ![Node registered](img/registered.jpg)
 
-Step 4: Click the endpoint name to view the registered resources. 
+**Step 4**: Click the endpoint name to view the registered resources. 
 
 ![Resource list](img/endpoint_resources.jpg)
 
-Step 5: To make a CoAP request to endpoints resource, click **Read**.
+**Step 5**: To make a CoAP request to endpoints resource, click **Read**.
 
 ![Read resources](img/read_resources.jpg)
 
