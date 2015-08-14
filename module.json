@@ -1,10 +1,10 @@
 {
-  "name": "lwm2m-client-linux-example",
+  "name": "mbed-client-linux-example",
   "version": "0.0.1",
-  "description": "LWM2M Client Example for Linux",
+  "description": "mbed Client Example for Linux",
   "private": true,
   "keywords": [
-    "lwm2m-client"
+    "mbed-client"
   ],
   "author": "yogesh.pande@arm.com",
   "licenses": [
