@@ -4,7 +4,8 @@ This document describes briefly the steps required to start using the LWM2M Clie
 
 ## Required hardware
 
-* 64 bit Ubuntu/XUbuntu OS desktop environment 
+* 64 bit Ubuntu/XUbuntu OS desktop environment
+
 **Note:** This example is targetted for building, compiling, and running on Linux platform only. 
 
 ## Required software
