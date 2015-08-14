@@ -12,6 +12,7 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ */
 #include <unistd.h>
 #include <pthread.h>
 #include <signal.h> /* For SIGIGN and SIGINT */
@@ -24,7 +25,7 @@
 #include "security.h"
 
 // Select connection mode: Psk, Certificate or NoSecurity
-M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::Psk;
+M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
 
 // Enter your mbed Device Server's IPv4 address and Port number in
 // mentioned format like coap://192.168.0.1
