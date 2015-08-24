@@ -16,12 +16,12 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <signal.h> /* For SIGIGN and SIGINT */
-#include "lwm2m-client/m2minterfacefactory.h"
-#include "lwm2m-client/m2mdevice.h"
-#include "lwm2m-client/m2minterfaceobserver.h"
-#include "lwm2m-client/m2minterface.h"
-#include "lwm2m-client/m2mobjectinstance.h"
-#include "lwm2m-client/m2mresource.h"
+#include "mbed-client/m2minterfacefactory.h"
+#include "mbed-client/m2mdevice.h"
+#include "mbed-client/m2minterfaceobserver.h"
+#include "mbed-client/m2minterface.h"
+#include "mbed-client/m2mobjectinstance.h"
+#include "mbed-client/m2mresource.h"
 #include "security.h"
 
 // Select connection mode: Psk, Certificate or NoSecurity
@@ -171,7 +171,10 @@ public:
         if(_object) {
             M2MObjectInstance* inst = _object->create_object_instance();
             if(inst) {
-                M2MResource* res = inst->create_dynamic_resource("D","ResourceTest",true);
+                M2MResource* res = inst->create_dynamic_resource("D",
+                                                                 "ResourceTest",
+                                                                 M2MResourceInstance::INTEGER,
+                                                                 true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                   res->set_operation(M2MBase::GET_PUT_POST_ALLOWED);
@@ -181,6 +184,7 @@ public:
                 _value++;
                 inst->create_static_resource("S",
                                              "ResourceTest",
+                                             M2MResourceInstance::STRING,
                                              STATIC_VALUE,
                                              sizeof(STATIC_VALUE)-1);
             }
@@ -197,8 +201,7 @@ public:
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                 res->set_value((const uint8_t*)buffer,
-                               (const uint32_t)size,
-                               true);
+                               (const uint32_t)size);
                 _value++;
             }
         }

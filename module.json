@@ -15,7 +15,7 @@
   ],
   "extraIncludes": [],
   "dependencies": {
-    "lwm2m-client": "~0.1.5"
+    "mbed-client": "~0.2.0"
   },
   "targetDependencies": {},
   "bin": "./source/"
