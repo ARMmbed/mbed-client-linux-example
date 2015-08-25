@@ -24,16 +24,16 @@
 #include "mbed-client/m2mresource.h"
 #include "security.h"
 
-// Select connection mode: Psk, Certificate or NoSecurity
+// Select connection mode: Certificate or NoSecurity
 M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
 
-// Enter your mbed Device Server's IPv4 address and Port number in
-// mentioned format like coap://192.168.0.1
-const String &M2M_SERVER_ADDRESS = "coap://<xxx.xxx.xxx.xxx>";
+// This is address to mbed Device Connector
+const String &MBED_SERVER_ADDRESS = "coap://ds-test.dev.mbed.com";
 //If you use secure connection port is 5684, for non-secure port is 5683
-const int &M2M_SERVER_PORT = 5683;
+const int &MBED_SERVER_PORT = 5683;
 
-const String &ENDPOINT_NAME = "lwm2m-endpoint";
+const String &MBED_USER_NAME_DOMAIN = MBED_DOMAIN;
+const String &ENDPOINT_NAME = MBED_ENDPOINT_NAME;
 
 const String &MANUFACTURER = "manufacturer";
 const String &TYPE = "type";
@@ -46,9 +46,9 @@ const uint8_t STATIC_VALUE[] = "Static value";
 static void ctrl_c_handle_function(void);
 typedef void (*signalhandler_t)(int); /* Function pointer type for ctrl-c */
 
-class M2MLWClient: public M2MInterfaceObserver {
+class MbedClient: public M2MInterfaceObserver {
 public:
-    M2MLWClient(){
+    MbedClient(){
         _security = NULL;
         _interface = NULL;
         _device = NULL;
@@ -60,7 +60,7 @@ public:
         _value = 0;
     }
 
-    ~M2MLWClient() {
+    ~MbedClient() {
         if(_security) {
             delete _security;
         }
@@ -83,8 +83,8 @@ public:
                                                   ENDPOINT_NAME,
                                                   "test",
                                                   60,
-                                                  M2M_SERVER_PORT,
-                                                  "",
+                                                  MBED_SERVER_PORT,
+                                                  MBED_USER_NAME_DOMAIN,
                                                   M2MInterface::UDP,
                                                   M2MInterface::LwIP_IPv4,
                                                   "");
@@ -117,10 +117,10 @@ public:
         _register_security = M2MInterfaceFactory::create_security(M2MSecurity::M2MServer);
         if(_register_security) {
             char buffer[6];
-            sprintf(buffer,"%d",M2M_SERVER_PORT);
+            sprintf(buffer,"%d",MBED_SERVER_PORT);
             m2m::String port(buffer);
 
-            m2m::String addr = M2M_SERVER_ADDRESS;
+            m2m::String addr = MBED_SERVER_ADDRESS;
             addr.append(":", 1);
             addr.append(port.c_str(), size_t(port.size()) );
             if(_register_security->set_resource_value(M2MSecurity::M2MServerUri, addr)) {
@@ -129,12 +129,7 @@ public:
                     _register_security->set_resource_value(M2MSecurity::ServerPublicKey,SERVER_CERT,sizeof(SERVER_CERT));
                     _register_security->set_resource_value(M2MSecurity::PublicKey,CERT,sizeof(CERT));
                     _register_security->set_resource_value(M2MSecurity::Secretkey,KEY,sizeof(KEY));
-                }else if( CONN_MODE == M2MSecurity::Psk ){
-                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Psk);
-                    _register_security->set_resource_value(M2MSecurity::ServerPublicKey,PSK_IDENTITY,sizeof(PSK_IDENTITY));
-                    _register_security->set_resource_value(M2MSecurity::PublicKey,PSK_IDENTITY,sizeof(PSK_IDENTITY));
-                    _register_security->set_resource_value(M2MSecurity::Secretkey,PSK,sizeof(PSK));
-                }else{
+                } else{
                     _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity);
                 }
                 success = true;
@@ -177,10 +172,10 @@ public:
                                                                  true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
-                  res->set_operation(M2MBase::GET_PUT_POST_ALLOWED);
+                  res->set_operation(M2MBase::GET_PUT_ALLOWED);
                   res->set_value((const uint8_t*)buffer,
                                  (const uint32_t)size);
-                  res->set_execute_function(execute_callback(this,&M2MLWClient::execute_function));
+                  res->set_execute_function(execute_callback(this,&MbedClient::execute_function));
                 _value++;
                 inst->create_static_resource("S",
                                              "ResourceTest",
@@ -279,8 +274,8 @@ private:
 };
 
 void* wait_for_unregister(void* arg) {
-    M2MLWClient *client;
-    client = (M2MLWClient*) arg;
+    MbedClient *client;
+    client = (MbedClient*) arg;
     if(client->unregister_successful()) {
         printf("Unregistered done\n");
     }
@@ -288,8 +283,8 @@ void* wait_for_unregister(void* arg) {
 }
 
 void* send_observation(void* arg) {
-    M2MLWClient *client;
-    client = (M2MLWClient*) arg;
+    MbedClient *client;
+    client = (MbedClient*) arg;
     static uint8_t counter = 0;
     while(1) {
         sleep(1);
@@ -305,13 +300,13 @@ void* send_observation(void* arg) {
     return NULL;
 }
 
-static M2MLWClient *m2mclient = NULL;
+static MbedClient *mbedclient = NULL;
 
 static void ctrl_c_handle_function(void)
 {
-    if(m2mclient && m2mclient->register_successful()) {
+    if(mbedclient && mbedclient->register_successful()) {
         printf("\nUnregistering endpoint and EXITING Program\n");
-        m2mclient->test_unregister();
+        mbedclient->test_unregister();
     exit(1);
     }
 }
@@ -320,43 +315,38 @@ int main() {
 
     pthread_t unregister_thread;
     pthread_t observation_thread;
-    M2MLWClient lwm2mclient;
+    MbedClient mbed_client;
 
-    if(M2M_SERVER_ADDRESS.compare(7,17,"<xxx.xxx.xxx.xxx>") == 0) {
-        printf("You don't have a valid Device Server Address, remember to update MBED_SERVER_ADDRESS !!!!!\n ");
-        printf("EXITING program\n");
-        exit(1);
-    }
 
-    m2mclient = &lwm2mclient;
+    mbedclient = &mbed_client;
 
     signal(SIGINT, (signalhandler_t)ctrl_c_handle_function);
 
-    bool result = lwm2mclient.create_interface();
+    bool result = mbed_client.create_interface();
     if(true == result) {
         printf("\nInterface created\n");
     }
-    result = lwm2mclient.create_register_object();
+    result = mbed_client.create_register_object();
     if(true == result) {
         printf("register object created");
     }
 
-    result = lwm2mclient.create_device_object();
+    result = mbed_client.create_device_object();
     if(true == result){
         printf("\nDevice object created !!\n");
     }
 
-    result = lwm2mclient.create_generic_object();
+    result = mbed_client.create_generic_object();
 
     if(true == result) {
         printf("\nGeneric object created\n");
     }
 
     printf("Registering endpoint\n");
-    lwm2mclient.test_register();
+    mbed_client.test_register();
 
-    pthread_create(&observation_thread, NULL, &send_observation, (void*) &lwm2mclient);
-    pthread_create(&unregister_thread, NULL, &wait_for_unregister, (void*) &lwm2mclient);
+    pthread_create(&observation_thread, NULL, &send_observation, (void*) &mbed_client);
+    pthread_create(&unregister_thread, NULL, &wait_for_unregister, (void*) &mbed_client);
 
     pthread_join(unregister_thread, NULL);
 
