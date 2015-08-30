@@ -15,6 +15,7 @@
  */
 #include <unistd.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <signal.h> /* For SIGIGN and SIGINT */
 #include "mbed-client/m2minterfacefactory.h"
 #include "mbed-client/m2mdevice.h"
@@ -82,13 +83,13 @@ public:
         _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
                                                   "test",
-                                                  60,
+                                                  600,
                                                   MBED_SERVER_PORT,
                                                   MBED_USER_NAME_DOMAIN,
                                                   M2MInterface::UDP,
                                                   M2MInterface::LwIP_IPv4,
                                                   "");
-        printf("Endpoint Name : linux-endpoint\n");
+        printf("Endpoint Name : %s\n", ENDPOINT_NAME.c_str());
         return (_interface == NULL) ? false : true;
     }
 
@@ -169,7 +170,7 @@ public:
                 M2MResource* res = inst->create_dynamic_resource("D",
                                                                  "ResourceTest",
                                                                  M2MResourceInstance::INTEGER,
-                                                                 true);
+                                                                 false);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                   res->set_operation(M2MBase::GET_PUT_ALLOWED);
@@ -192,7 +193,7 @@ public:
             M2MObjectInstance* inst = _object->object_instance();
             if(inst) {
                 M2MResource* res = inst->resource("D");
-                printf(" Value sent %d\n", _value);
+                printf("Resource Value /Test/0/D : %d\n", _value);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                 res->set_value((const uint8_t*)buffer,
