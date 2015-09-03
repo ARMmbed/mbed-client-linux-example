@@ -1,6 +1,8 @@
 # Getting started on Mbed Client Linux Example
 
-This document describes briefly the steps required to start using the Mbed Client example application on Linux platform. The LWM2M Client example application demonstrates how to register, read resource values  to the mbed Device Connector Service and deregister from it.
+**DISCLAIMER**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work for you, or you are having problems with it, that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements in [ARM mbed](https://mbed.com). If, however, you are mbed partner and have your own mbed Device Server setup, you can use this example application just by changing the mbed Device Server address from `api.connector.mbed.com` to your own mbed Device Server address. 
+
+This document describes briefly the steps required to start using the mbed Client example application on Linux platform. The mbed Client example application demonstrates how to register, read resource values  to mbed Device Connector and deregister from it.
 
 ## Required hardware
 
@@ -19,7 +21,7 @@ This document describes briefly the steps required to start using the Mbed Clien
 
 To set up the environment, you will need to do the following:
 
-1. Go to [Device Connector website](http://connector-test.dev.mbed.com) and log in with your mbed.org account.
+1. Go to [mbed Device Connector website](http://connector-test.dev.mbed.com) and log in with your mbed.org account.
 2. Configure the mbed Client example program with desired parameters. See [mbed Build instructions](#mbed-Build-instructions) chapter for more information.
 4. Build the application with yotta.
 5. Run the application from the command prompt.
@@ -54,7 +56,7 @@ The general instructions for both modes are the same. The only difference comes 
 #### Setting Certificate mode
 1. Set the `CONN_MODE` value to `M2MSecurity::Certificate`.
 2. Set `MBED_SERVER_PORT` to `5684`.
-3. Go to  [Device Connector website](http://connector-test.dev.mbed.com).
+3. Go to  [mbed Device Connector website](http://connector-test.dev.mbed.com).
 4. Navigate to **Security credentials** under **My devices**.
 5. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
 6. Copy the created security credentials to `sources/security.h`
@@ -82,16 +84,16 @@ The general instructions for both modes are the same. The only difference comes 
 
 Ensure that you have the example application running on your linux environment(see [Running Mbed Client Linux example](#running-mbed-client-linux-example)).
 
-**Step 1**: Go to [Device Connector website](http://connector-test.dev.mbed.com).
+**Step 1**: Go to [mbed Device Connector website](http://connector-test.dev.mbed.com).
 
 **Step 2**: Log in using your mbed account.
 
 **Step 3**: Click the **Connected devices** link under **My devices** to see your registered mbed Client example device.
 
-**Step 4**: You can send requests to mbed Client device with Device Connector API. To do that, click **API Console** under **Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/lwm2m-endpoint/Test/0/S` creates a GET request to the static **/Test/0/S** resource.
+**Step 4**: You can send requests to mbed Client device with mbed Device Connector API. To do that, click **API Console** under **mbed Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/lwm2m-endpoint/Test/0/S` creates a GET request to the static **/Test/0/S** resource.
 
 The **/Test/0/S** represents the static resource that is a fixed value set in the mbed Client. 
 
-The **/Test/0/D** represents the dynamic resource that can be read by the mbed Device Server. It is linked with the program which automatically start incrementing the resource value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and increments the value by 1. You can make a CoAP request to the node resources to get the latest value. To do that, click **API Console** under **Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/lwm2m-endpoint/Test/0/D` creates a GET request to the **/Test/0/D** resource.This returns the latest value of **/Test/0/D**. 
+The **/Test/0/D** represents the dynamic resource that can be read by the mbed Device Server. It is linked with the program which automatically start incrementing the resource value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and increments the value by 1. You can make a CoAP request to the node resources to get the latest value. To do that, click **API Console** under **mbed Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/lwm2m-endpoint/Test/0/D` creates a GET request to the **/Test/0/D** resource.This returns the latest value of **/Test/0/D**. 
 
 To stop and deregister the Mbed Client example, you need to interrupt the program by pressing CTRL+C. The console displays **Unregistering endpoint**. This will send an unregister message to mDS. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint turns **grey** from the **Connected devices** list of mbed Device Connector Web UI.

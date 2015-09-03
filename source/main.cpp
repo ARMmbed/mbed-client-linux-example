@@ -83,7 +83,7 @@ public:
         _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
                                                   "test",
-                                                  600,
+                                                  3600,
                                                   MBED_SERVER_PORT,
                                                   MBED_USER_NAME_DOMAIN,
                                                   M2MInterface::UDP,
@@ -216,9 +216,7 @@ public:
     }
 
     void test_update_register() {
-        uint32_t updated_lifetime = 20;
-        _registered = false;
-        _unregistered = false;
+        uint32_t updated_lifetime = 3600;
         if(_interface) {
             _interface->update_registration(_register_security,updated_lifetime);
         }
@@ -301,6 +299,20 @@ void* send_observation(void* arg) {
     return NULL;
 }
 
+void* update_register(void* arg) {
+    MbedClient *client;
+    client = (MbedClient*) arg;
+    static uint8_t counter = 0;
+    while(1) {
+        sleep(20);
+        if(client->register_successful()) {
+            printf("Sending update register\n");
+            client->test_update_register();
+        }
+    }
+    return NULL;
+}
+
 static MbedClient *mbedclient = NULL;
 
 static void ctrl_c_handle_function(void)
@@ -316,6 +328,7 @@ int main() {
 
     pthread_t unregister_thread;
     pthread_t observation_thread;
+    pthread_t update_register_thread;
     MbedClient mbed_client;
 
 
@@ -348,10 +361,13 @@ int main() {
 
     pthread_create(&observation_thread, NULL, &send_observation, (void*) &mbed_client);
     pthread_create(&unregister_thread, NULL, &wait_for_unregister, (void*) &mbed_client);
+    pthread_create(&update_register_thread, NULL, &update_register, (void*) &mbed_client);
 
     pthread_join(unregister_thread, NULL);
+    pthread_join(update_register_thread, NULL);
 
     pthread_detach(unregister_thread);
+    pthread_detach(update_register_thread);
 
     return 0;
 }
