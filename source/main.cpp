@@ -16,6 +16,8 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include <signal.h> /* For SIGIGN and SIGINT */
 #include "mbed-client/m2minterfacefactory.h"
 #include "mbed-client/m2mdevice.h"
@@ -80,11 +82,17 @@ public:
     }
 
     bool create_interface() {
+
+       time_t t;
+       srand((unsigned) time(&t));
+
+       uint16_t port = rand() % 65535 + 12345;
+
         _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
                                                   "test",
                                                   3600,
-                                                  MBED_SERVER_PORT,
+                                                  port,
                                                   MBED_USER_NAME_DOMAIN,
                                                   M2MInterface::UDP,
                                                   M2MInterface::LwIP_IPv4,
@@ -330,7 +338,6 @@ int main() {
     pthread_t observation_thread;
     pthread_t update_register_thread;
     MbedClient mbed_client;
-
 
     mbedclient = &mbed_client;
 
