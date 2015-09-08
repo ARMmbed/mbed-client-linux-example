@@ -1,98 +1,134 @@
-# Getting started on Mbed Client Linux Example
+# Getting Started with mbed Client on Linux
 
-**DISCLAIMER**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work for you, or you are having problems with it, that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements in [ARM mbed](https://mbed.com). If, however, you are mbed partner and have your own mbed Device Server setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed Device Server address. 
+**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mDS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed Device Server address. 
 
-This document describes briefly the steps required to start using the mbed Client example application on Linux platform. The mbed Client example application demonstrates how to register, read resource values  to mbed Device Connector and deregister from it.
+This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
 
-## Required hardware
+**Note:** This example is targeted for building, compiling, and running on the Linux platform only. 
 
-* 64 bit Ubuntu/XUbuntu OS desktop environment
+## Required software and setup
 
-**Note:** This example is targetted for building, compiling, and running on Linux platform only. 
+* 64 bit Ubuntu/XUbuntu OS desktop environment.
 
-## Required software
+* Install yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
 
-* [yotta](http://docs.yottabuild.org/#installing) - to build the example programs.
+* You may need to open UDP port 5683 or 5684 in your computer's firewall for mbed Device Connector to communicate with this example application.
+
+* If you are running Ubuntu on a virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged`. Otherwise, incoming UDP packets may start dropping after a few minutes. 
 
 ## Optional software
+
 * [Wireshark](https://www.wireshark.org/) - for packet inspection and network debugging.
 
-## Setting up the environment
+## Quick guide
 
-To set up the environment, you will need to do the following:
+To run the example: 
 
-1. Go to [mbed Device Connector website](http://connector-test.dev.mbed.com) and log in with your mbed.org account.
-2. Configure the mbed Client example program with desired parameters. See [mbed Build instructions](#mbed-build-instructions) chapter for more information.
-4. Build the application with yotta.
-5. Run the application from the command prompt.
+1. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com) and log in with your mbed.org account.
 
-**Note:** You may need to open UDP port 5683/5684 in your computer firewall for mbed Device Connector to communicate with this example application.
-In case you are running Ubuntu on virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged`. Otherwise, incoming UDP packets may start dropping after a few minutes. 
+2. Configure the mbed Client example program as needed. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
-## mbed Build instructions		
-		
-### Building
-You can use this example in following connection modes:
+4. Build the application with yotta. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
-1. Non-secure mode
-2. Certificate mode
+5. Run the application from the command prompt. See the [Running the mbed Client Linux example](#running-the-mbed-client-linux-example) chapter for more information.
+
+## Running and build instructions		
+### Review: building for two connection modes
+
+You can use this example in two connection modes:
+
+- Non-secure mode.
+
+- Certificate mode.
 
 The general instructions for both modes are the same. The only difference comes in step 5, when selecting the mode.
 
-#### General 
-1. Install yotta. See instructions [here](http://docs.yottabuild.org/#installing).
-2. Install the necessary toolchains. Refer to the yotta installation instructions (in step 1) to learn how to install the toolchains.
-3. In the command prompt, go to **mbed-client-linux-example**.
-4. Select and set the connection mode as instructed below.
-5. Set up the target device, `yotta target x86-linux-native`.
-6. In the command prompt, type `yotta build`. The executable file will be created to `build/x86-linux-native/source/` folder.
+### Building 
 
-#### Setting Non-secure mode
-1. Open `sources/main.cpp` with your code editor and set the `CONN_MODE` value to `M2MSecurity::NoSecurity`.
-2. Also in `sources/main.cpp`, set `MBED_SERVER_PORT` to `5683`.
-3. Open `sources/security.h` with your code editor to set the registration domain. You **must** use your **mbed developer account username** as a domain name. Enter your **mbed developer account username** as domain in `MBED_DOMAIN`.
-4. The endpoint registration name is defined as `MBED_ENDPOINT_NAME` in `sources/security.h`. You can change it by modifying it with your code editor.
+First, made sure you've installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
 
-#### Setting Certificate mode
-1. Open `sources/main.cpp` with your code editor and set the `CONN_MODE` value to `M2MSecurity::Certificate`.
-2. Also in `sources/main.cpp`, set `MBED_SERVER_PORT` to `5684`.
-3. Go to  [mbed Device Connector website](http://connector-test.dev.mbed.com).
-4. Navigate to **Security credentials** under **My devices**.
-5. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
-6. Copy the created security credentials to `sources/security.h`
+2. In the command prompt, go to **mbed-client-linux-example**.
 
-### Running Mbed Client Linux example
+3. Select and set the connection mode:
 
-1. Find the executable file named `mbed-client-linux-example` in the folder `mbed-client-linux-example/build/x86-linux-native/source/`.
-2. Run the executable from command line using `./mbed-client-linux-example`
+	- **For non-secure mode:**
+
+		A. Open `sources/main.cpp` with your code editor and:
+
+		- Set `CONN_MODE` to `M2MSecurity::NoSecurity`.
+
+		- Set `MBED_SERVER_PORT` to `5683`.
+
+		C. Open `sources/security.h` with your code editor to set the registration domain. You **must** use your **mbed developer account username** as a domain name. Enter it as the value of `MBED_DOMAIN`.
+
+		D. The endpoint registration name is defined as `MBED_ENDPOINT_NAME` in `sources/security.h`. You can change it by modifying it with your code editor.
+
+	- **For certificate mode:**
+
+		A. Open `sources/main.cpp` with your code editor and:
+	
+		- Set the `CONN_MODE` value to `M2MSecurity::Certificate`.
+
+		- Set `MBED_SERVER_PORT` to `5684`.
+
+		C. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com).
+
+		D. Go to **My devices>Security credentials**.
+
+		E. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
+
+		F. Copy the security credentials to `sources/security.h`
+
+3. In the command prompt, set up the target device by typing `yotta target x86-linux-native`.
+
+4. In the command prompt, type `yotta build`. The executable file will be created in the folder `build/x86-linux-native/source/`.
+
+### Running the mbed Client Linux example
+
+1. In the folder `mbed-client-linux-example/build/x86-linux-native/source/`, find the executable file `mbed-client-linux-example`.
+
+2. Run the executable from the command line by typing `./mbed-client-linux-example`.
+
 3. The program begins execution and starts registration with mbed Device Connector. The console displays **Registering endpoint** and when the registration is successful it displays **Registered**.
-4. After a successful registration, the program will automatically start incrementing one of the resource value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. For example, **Resource Value /Test/0/D : 1**. These values can be read from the mbed Device Connector through Test API.
+
+4. After a successful registration, the program will automatically start incrementing one of the resource values every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. For example, **Resource Value /Test/0/D : 1**. These values can be read from the mbed Device Connector through the Test API.
 
 ## Testing
 
 ### Logging network traffic (optional)
 
 1. Start Wireshark on the computer where your example application is running.
+
 2. Select your Ethernet interface, usually **Local Area Connection**.
+
 3. Click **Start**.
-4. Select **Filter** in the toolbar and add a filter to correspond to UDP port that you are using (5683 for non-secure and 5684 for secure). Activate the filter and press Enter.
+
+4. Select **Filter** in the toolbar and add a filter to correspond to the UDP port that you are using (5683 for non-secure and 5684 for secure). Activate the filter and press Enter.
+
 5. Run your example application from the command line.
+
 **Note:** If you are running mDS on the same host as the example application you have to select the _loopback interface_ in Wireshark.
 
+### Testing the mbed Client Linux example application with mbed Device Connector
 
-### Testing Mbed Client Linux example application with mbed Device Connector
+Ensure that you have the example application running on your Linux environment (see [Running the mbed Client Linux example](#running-the-mbed-client-linux-example)).
 
-Ensure that you have the example application running on your linux environment(see [Running Mbed Client Linux example](#running-mbed-client-linux-example)).
+1. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com).
 
-1. Go to [mbed Device Connector website](http://connector-test.dev.mbed.com).
 2. Log in using your mbed account.
-3. Click the **Connected devices** link under **My devices** to see your registered mbed Client example device.
-4. You can send requests to mbed Client device with mbed Device Connector API. To do that, click **API Console** under **mbed Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
 
-The **/Test/0/S** represents the static resource that is a fixed value set in the mbed Client. 
+3. Go to **My devices>Connected devices** to see your registered mbed Client example device.
 
-The **/Test/0/D** represents the dynamic resource that can be read by the mbed Device Server. It is linked with the program which automatically start incrementing the resource value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and increments the value by 1. You can make a CoAP request to the node resources to get the latest value. To do that, click **API Console** under **mbed Device Connector**. Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/D?sync=true` creates a GET request to the **/Test/0/D** resource.This returns the latest value of **/Test/0/D**.
+4. You can send a CoAP request to the mbed Client device with the mbed Device Connector API. To do that:
+
+	- Go to **mbed Device Connector>API Console**. 
+
+	- Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
+
+**/Test/0/D** represents the dynamic resource that the mbed Device Server can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
+
+**/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 
 **NOTE:** If you changed your endpoint's name (the variable `MBED_ENDPOINT_NAME` in `sources/security.h`) from the default `mbed-linux-endpoint`, you will need to change it in the above URLs as well.
 
-To stop and deregister the Mbed Client example, you need to interrupt the program by pressing CTRL+C. The console displays **Unregistering endpoint**. This will send an unregister message to mDS. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint disappears from the **Connected devices** list of mbed Device Connector Web UI.
+To stop and deregister the mbed Client example, you need to interrupt the program by pressing CTRL+C. This sends an unregister message to mDS. The console displays **Unregistering endpoint**. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint disappears from the **Connected devices** list on the mbed Device Connector web UI.
