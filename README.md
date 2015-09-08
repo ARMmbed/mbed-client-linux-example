@@ -125,9 +125,9 @@ Ensure that you have the example application running on your Linux environment (
 
 	- Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
 
-**/Test/0/D** represents the dynamic resource that the mbed Device Server can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
+		- **/Test/0/D** represents the dynamic resource that the mbed Device Server can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
 
-**/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
+		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 
 **NOTE:** If you changed your endpoint's name (the variable `MBED_ENDPOINT_NAME` in `sources/security.h`) from the default `mbed-linux-endpoint`, you will need to change it in the above URLs as well.
 
