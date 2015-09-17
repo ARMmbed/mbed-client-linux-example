@@ -24,13 +24,11 @@ This document describes how to start using the mbed Client example application o
 
 To run the example: 
 
-1. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com) and log in with your mbed.org account.
+1. Go to the [mbed Device Connector website](https://connector.mbed.com) and log in with your mbed.org account.
 
 2. Configure the mbed Client example program as needed. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
 4. Build the application with yotta. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
-
-5. Run the application from the command prompt. See the [Running the mbed Client Linux example](#running-the-mbed-client-linux-example) chapter for more information.
 
 ## Running and build instructions		
 ### Review: building for two connection modes
@@ -71,7 +69,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 		- Set `MBED_SERVER_PORT` to `5684`.
 
-		C. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com).
+		C. Go to the [mbed Device Connector website](https://connector.mbed.com).
 
 		D. Go to **My devices>Security credentials**.
 
@@ -113,7 +111,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 Ensure that you have the example application running on your Linux environment (see [Running the mbed Client Linux example](#running-the-mbed-client-linux-example)).
 
-1. Go to the [mbed Device Connector website](http://connector-test.dev.mbed.com).
+1. Go to the [mbed Device Connector website](https://connector.mbed.com).
 
 2. Log in using your mbed account.
 
@@ -123,12 +121,12 @@ Ensure that you have the example application running on your Linux environment (
 
 	- Go to **mbed Device Connector>API Console**. 
 
-	- Click the URL to create a request. For example: `http://ds-test.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
-
+	- Click the URL to create a request. For example: `https://api.connector.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
 		- **/Test/0/D** represents the dynamic resource that the mbed Device Server can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
-
 		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 
 **NOTE:** If you changed your endpoint's name (the variable `MBED_ENDPOINT_NAME` in `sources/security.h`) from the default `mbed-linux-endpoint`, you will need to change it in the above URLs as well.
+
+For more information on the mbed Device Connector REST API, see help pages.
 
 To stop and deregister the mbed Client example, you need to interrupt the program by pressing CTRL+C. This sends an unregister message to mDS. The console displays **Unregistering endpoint**. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint disappears from the **Connected devices** list on the mbed Device Connector web UI.
