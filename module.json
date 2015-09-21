@@ -2,7 +2,6 @@
   "name": "mbed-client-linux-example",
   "version": "0.1.0",
   "description": "mbed Client Example for Linux",
-  "private": true,
   "keywords": [
     "mbed-client"
   ],
