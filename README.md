@@ -1,6 +1,6 @@
 # Getting Started with mbed Client on Linux
 
-**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mbed DS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed Device Server address. 
+**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mbed DS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed DS address. 
 
 This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
 
@@ -122,7 +122,7 @@ Ensure that you have the example application running on your Linux environment (
 	- Go to **mbed Device Connector>API Console**. 
 
 	- Click the URL to create a request. For example: `https://api.connector.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
-		- **/Test/0/D** represents the dynamic resource that the mbed Device Server can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
+		- **/Test/0/D** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
 		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 
 **NOTE:** If you changed your endpoint's name (the variable `MBED_ENDPOINT_NAME` in `sources/security.h`) from the default `mbed-linux-endpoint`, you will need to change it in the above URLs as well.
