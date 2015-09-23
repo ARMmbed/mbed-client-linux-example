@@ -1,6 +1,6 @@
 # Getting Started with mbed Client on Linux
 
-**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mDS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed Device Server address. 
+**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mbed DS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed Device Server address. 
 
 This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
 
@@ -105,7 +105,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 5. Run your example application from the command line.
 
-**Note:** If you are running mDS on the same host as the example application you have to select the _loopback interface_ in Wireshark.
+**Note:** If you are running mbed DS on the same host as the example application you have to select the _loopback interface_ in Wireshark.
 
 ### Testing the mbed Client Linux example application with mbed Device Connector
 
@@ -129,4 +129,4 @@ Ensure that you have the example application running on your Linux environment (
 
 For more information on the mbed Device Connector REST API, see help pages.
 
-To stop and deregister the mbed Client example, you need to interrupt the program by pressing CTRL+C. This sends an unregister message to mDS. The console displays **Unregistering endpoint**. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint disappears from the **Connected devices** list on the mbed Device Connector web UI.
+To stop and deregister the mbed Client example, you need to interrupt the program by pressing CTRL+C. This sends an unregister message to mbed DS. The console displays **Unregistering endpoint**. After a successful deregistration, the console displays **Unregistration done --> exiting** and terminates the program. Also, the endpoint disappears from the **Connected devices** list on the mbed Device Connector web UI.
