@@ -33,6 +33,8 @@ To run the example:
 ## Running and build instructions		
 ### Review: building for two connection modes
 
+By changing SOCKET_MODE between M2MInterface::UDP or M2MInterface::TCP you can select binding mode for socket.
+
 You can use this example in two connection modes:
 
 - Non-secure mode.
