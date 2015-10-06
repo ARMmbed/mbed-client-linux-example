@@ -30,8 +30,11 @@
 // Select connection mode: Certificate or NoSecurity
 M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
 
+//Select binding mode: UDP or TCP
+M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
+
 // This is address to mbed Device Connector
-const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com";
+const String &MBED_SERVER_ADDRESS = "coap://ds-test.dev.mbed.com";
 //If you use secure connection port is 5684, for non-secure port is 5683
 const int &MBED_SERVER_PORT = 5683;
 
@@ -88,13 +91,13 @@ public:
 
        uint16_t port = rand() % 65535 + 12345;
 
-        _interface = M2MInterfaceFactory::create_interface(*this,
+       _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
                                                   "test",
                                                   3600,
                                                   port,
                                                   MBED_USER_NAME_DOMAIN,
-                                                  M2MInterface::UDP,
+                                                  SOCKET_MODE,
                                                   M2MInterface::LwIP_IPv4,
                                                   "");
         printf("Endpoint Name : %s\n", ENDPOINT_NAME.c_str());
