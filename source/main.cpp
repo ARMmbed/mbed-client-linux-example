@@ -34,7 +34,7 @@ M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
 
 // This is address to mbed Device Connector
-const String &MBED_SERVER_ADDRESS = "coap://ds-test.dev.mbed.com";
+const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com";
 //If you use secure connection port is 5684, for non-secure port is 5683
 const int &MBED_SERVER_PORT = 5683;
 
