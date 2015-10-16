@@ -300,7 +300,7 @@ void* send_observation(void* arg) {
         sleep(1);
         if(counter >= 10 &&
            client->register_successful()) {
-            printf("Sending observation\n");
+            printf("Incrementing Resource Value\n");
             client->update_resource();
             counter = 0;
         }
