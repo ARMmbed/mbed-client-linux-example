@@ -27,16 +27,11 @@
 #include "mbed-client/m2mresource.h"
 #include "security.h"
 
-// Select connection mode: Certificate or NoSecurity
-M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
-
 //Select binding mode: UDP or TCP
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
 
 // This is address to mbed Device Connector
-const String &MBED_SERVER_ADDRESS = "coap://ds-test-sl.dev.mbed.com";
-//If you use secure connection port is 5684, for non-secure port is 5683
-const int &MBED_SERVER_PORT = 5683;
+const String &MBED_SERVER_ADDRESS = "coap://ds-test-sl.dev.mbed.com:5684";
 
 const String &MBED_USER_NAME_DOMAIN = MBED_DOMAIN;
 const String &ENDPOINT_NAME = MBED_ENDPOINT_NAME;
@@ -128,24 +123,12 @@ public:
         bool success = false;
         _register_security = M2MInterfaceFactory::create_security(M2MSecurity::M2MServer);
         if(_register_security) {
-            char buffer[6];
-            sprintf(buffer,"%d",MBED_SERVER_PORT);
-            m2m::String port(buffer);
-
-            m2m::String addr = MBED_SERVER_ADDRESS;
-            addr.append(":", 1);
-            addr.append(port.c_str(), size_t(port.size()) );
-            if(_register_security->set_resource_value(M2MSecurity::M2MServerUri, addr)) {
-                if( CONN_MODE == M2MSecurity::Certificate ){
-                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Certificate);
-                    _register_security->set_resource_value(M2MSecurity::ServerPublicKey,SERVER_CERT,sizeof(SERVER_CERT));
-                    _register_security->set_resource_value(M2MSecurity::PublicKey,CERT,sizeof(CERT));
-                    _register_security->set_resource_value(M2MSecurity::Secretkey,KEY,sizeof(KEY));
-                } else{
-                    _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::NoSecurity);
-                }
-                success = true;
-            }
+            _register_security->set_resource_value(M2MSecurity::M2MServerUri, MBED_SERVER_ADDRESS);
+            _register_security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Certificate);
+            _register_security->set_resource_value(M2MSecurity::ServerPublicKey,SERVER_CERT,sizeof(SERVER_CERT));
+            _register_security->set_resource_value(M2MSecurity::PublicKey,CERT,sizeof(CERT));
+            _register_security->set_resource_value(M2MSecurity::Secretkey,KEY,sizeof(KEY));
+            success = true;
         }
         return success;
     }

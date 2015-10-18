@@ -31,17 +31,13 @@ To run the example:
 4. Build the application with yotta. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
 ## Running and build instructions		
+
+This example works in secure Certificate mode.
+
 ### Review: building for two connection modes
-
-You can use this example in two connection modes:
-
-- Non-secure mode.
-
-- Certificate mode.
-
 #### Setting socket type
 
-Apart from different secure mode, you can also connect in different socket mode.
+You can also connect in different socket mode.
 By changing SOCKET_MODE between M2MInterface::UDP or M2MInterface::TCP you can select binding mode for socket. 
 Below instructions remain same irrespective of the socket mode you choose.
 
@@ -53,35 +49,15 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 2. In the command prompt, go to **mbed-client-linux-example**.
 
-3. Select and set the connection mode:
+3. Setup the application with correct Certificate and Domain:
 
-	- **For non-secure mode:**
+	A. Go to the [mbed Device Connector website](https://connector-test-sl.dev.mbed.com).
 
-		A. Open `sources/main.cpp` with your code editor and:
+	B. Go to **My devices>Security credentials**.
 
-		- Set `CONN_MODE` to `M2MSecurity::NoSecurity`.
+	C. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
 
-		- Set `MBED_SERVER_PORT` to `5683`.
-
-		C. Open `sources/security.h` with your code editor to set the registration domain. You **must** use your **mbed developer account username** as a domain name. Enter it as the value of `MBED_DOMAIN`.
-
-		D. The endpoint registration name is defined as `MBED_ENDPOINT_NAME` in `sources/security.h`. You can change it by modifying it with your code editor.
-
-	- **For certificate mode:**
-
-		A. Open `sources/main.cpp` with your code editor and:
-	
-		- Set the `CONN_MODE` value to `M2MSecurity::Certificate`.
-
-		- Set `MBED_SERVER_PORT` to `5684`.
-
-		C. Go to the [mbed Device Connector website](https://connector-test-sl.dev.mbed.com).
-
-		D. Go to **My devices>Security credentials**.
-
-		E. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
-
-		F. Copy the security credentials to `sources/security.h`
+	D. Copy the security credentials to `sources/security.h`
 
 3. In the command prompt, set up the target device by typing `yotta target x86-linux-native`.
 
@@ -107,7 +83,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 3. Click **Start**.
 
-4. Select **Filter** in the toolbar and add a filter to correspond to the UDP port that you are using (5683 for non-secure and 5684 for secure). Activate the filter and press Enter.
+4. Select **Filter** in the toolbar and add a filter to correspond to the UDP port that you are using (5684 for secure). Activate the filter and press Enter.
 
 5. Run your example application from the command line.
 
