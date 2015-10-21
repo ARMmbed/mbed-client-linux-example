@@ -103,7 +103,7 @@ Ensure that you have the example application running on your Linux environment (
 
 	- Go to **mbed Device Connector>API Console**. 
 
-	- Click the URL to create a request. For example: `https://connector-test-sl.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
+	- Click the URL to create a request. For example: `https://connector-test-sl.dev.mbed.com/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
 		- **/Test/0/D** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
 		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 
