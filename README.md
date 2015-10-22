@@ -41,8 +41,6 @@ You can also connect in different socket mode.
 By changing SOCKET_MODE between M2MInterface::UDP or M2MInterface::TCP you can select binding mode for socket. 
 Below instructions remain same irrespective of the socket mode you choose.
 
-The general instructions for both modes are the same. The only difference comes in step 5, when selecting the mode.
-
 ### Building 
 
 First, made sure you've installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
