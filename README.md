@@ -24,7 +24,7 @@ This document describes how to start using the mbed Client example application o
 
 To run the example: 
 
-1. Go to the [mbed Device Connector website](https://connector-test-sl.dev.mbed.com) and log in with your mbed.org account.
+1. Go to the [mbed Device Connector website](https://connector.mbed.com) and log in with your mbed.org account.
 
 2. Configure the mbed Client example program as needed. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
@@ -41,8 +41,6 @@ You can also connect in different socket mode.
 By changing SOCKET_MODE between M2MInterface::UDP or M2MInterface::TCP you can select binding mode for socket. 
 Below instructions remain same irrespective of the socket mode you choose.
 
-The general instructions for both modes are the same. The only difference comes in step 5, when selecting the mode.
-
 ### Building 
 
 First, made sure you've installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
@@ -51,7 +49,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 3. Setup the application with correct Certificate and Domain:
 
-	A. Go to the [mbed Device Connector website](https://connector-test-sl.dev.mbed.com).
+	A. Go to the [mbed Device Connector website](https://connector.mbed.com).
 
 	B. Go to **My devices>Security credentials**.
 
@@ -93,7 +91,7 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 Ensure that you have the example application running on your Linux environment (see [Running the mbed Client Linux example](#running-the-mbed-client-linux-example)).
 
-1. Go to the [mbed Device Connector website](https://connector-test-sl.dev.mbed.com).
+1. Go to the [mbed Device Connector website](https://connector.mbed.com).
 
 2. Log in using your mbed account.
 
@@ -103,7 +101,7 @@ Ensure that you have the example application running on your Linux environment (
 
 	- Go to **mbed Device Connector>API Console**. 
 
-	- Click the URL to create a request. For example: `https://connector-test-sl.dev.mbed.com/v1/endpoints/mbed-linux-endpoint/Test/0/S?sync=true` creates a GET request to the static **/Test/0/S** resource.
+	- Click the URL to create a request. For example: `https://api.connector.mbed.com/endpoints/<MBED_ENDPOINT_NAME>/Test/0/S` creates a GET request to the static **/Test/0/S** resource.
 		- **/Test/0/D** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
 		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
 

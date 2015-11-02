@@ -31,7 +31,7 @@
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
 
 // This is address to mbed Device Connector
-const String &MBED_SERVER_ADDRESS = "coap://ds-test-sl.dev.mbed.com:5684";
+const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com:5684";
 
 const String &MBED_USER_NAME_DOMAIN = MBED_DOMAIN;
 const String &ENDPOINT_NAME = MBED_ENDPOINT_NAME;
@@ -243,8 +243,43 @@ public:
 
     void error(M2MInterface::Error error){
         _error = true;
-        printf("\nError occured Error Code : %d\n", (int8_t)error);
-
+        String error_code;
+	switch(error) {
+        case M2MInterface::ErrorNone:
+             error_code += "M2MInterface::ErrorNone";
+             break;
+            case M2MInterface::AlreadyExists:
+             error_code += "M2MInterface::AlreadyExists";
+             break;
+            case M2MInterface::BootstrapFailed:
+             error_code += "M2MInterface::BootstrapFailed";
+             break;
+            case M2MInterface::InvalidParameters:
+             error_code += "M2MInterface::InvalidParameters";
+             break;
+            case M2MInterface::NotRegistered:
+             error_code += "M2MInterface::NotRegistered";
+             break;
+            case M2MInterface::Timeout:
+             error_code += "M2MInterface::Timeout";
+             break;
+            case M2MInterface::NetworkError:
+             error_code += "M2MInterface::NetworkError";
+             break;
+            case M2MInterface::ResponseParseFailed:
+             error_code += "M2MInterface::ResponseParseFailed";
+             break;
+            case M2MInterface::UnknownError:
+             error_code += "M2MInterface::UnknownError";
+             break;
+            case M2MInterface::MemoryFail:
+             error_code += "M2MInterface::MemoryFail";
+             break;
+            case M2MInterface::NotAllowed:
+             error_code += "M2MInterface::NotAllowed";
+             break;
+        }
+        printf("\nError occured  : %s\n", error_code.c_str());
     }
 
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
@@ -314,8 +349,8 @@ static void ctrl_c_handle_function(void)
     if(mbedclient && mbedclient->register_successful()) {
         printf("\nUnregistering endpoint and EXITING Program\n");
         mbedclient->test_unregister();
-    exit(1);
     }
+    exit(1);
 }
 
 int main() {
