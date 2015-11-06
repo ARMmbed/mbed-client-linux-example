@@ -26,7 +26,9 @@ To run the example:
 
 1. Go to the [mbed Device Connector website](https://connector.mbed.com) and log in with your mbed.org account.
 
-2. Configure the mbed Client example program as needed. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
+2. Clone this example into your local computer.
+
+3. Configure the mbed Client example program as needed. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
 4. Build the application with yotta. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
