@@ -1,7 +1,5 @@
 # Getting Started with mbed Client on Linux
 
-**Disclaimer**: This example application connects to [ARM mbed Device Connector](https://connector.mbed.com), a new web service hosted by ARM. However, at the time of publishing this example, the service may not yet be live or fully ready for use. If the example doesn't work properly (or at all) that probably means we haven't yet got the service online. Please look out for mbed Device Connector release announcements on [mbed.com](https://mbed.com). If, however, you are an mbed partner and have your own mbed Device Server (mbed DS) setup, you can use this example application just by changing the `MBED_SERVER_ADDRESS` in `sources/main.cpp` to your own mbed DS address. 
-
 This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
 
 **Note:** This example is targeted for building, compiling, and running on the Linux platform only. 
