@@ -37,27 +37,25 @@ This example works in secure Certificate mode.
 ### Review: building for two connection modes
 #### Setting socket type
 
-You can also connect in different socket mode.
-By changing SOCKET_MODE between M2MInterface::UDP or M2MInterface::TCP you can select binding mode for socket. 
-Below instructions remain same irrespective of the socket mode you choose.
+You can also connect in different socket mode. To select the binding mode for the socket, change `SOCKET_MODE` between `M2MInterface::UDP` and `M2MInterface::TCP`. The instructions further in this document remain te same irrespective of the socket mode you select.
 
 ### Building 
 
-First, made sure you've installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
+First, made sure you have installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
 
-2. In the command prompt, go to **mbed-client-linux-example**.
+1. In the command prompt, go to **mbed-client-linux-example**.
 
-3. Setup the application with correct Certificate and Domain:
+2. Set up the application with correct Certificate and Domain:
 
 	A. Go to the [mbed Device Connector website](https://connector.mbed.com).
 
-	B. Go to **My devices>Security credentials**.
+	B. Go to **My devices -> Security credentials**.
 
 	C. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
 
-	D. Copy the security credentials to `sources/security.h`
+	D. Copy the security credentials to `sources/security.h`.
 
-3. In the command prompt, set up the target device by typing `yotta target x86-linux-native`.
+3. In the command prompt, type `yotta target x86-linux-native` to set up the target device.
 
 4. In the command prompt, type `yotta build`. The executable file will be created in the folder `build/x86-linux-native/source/`.
 
@@ -65,11 +63,11 @@ First, made sure you've installed yotta and all necessary toolchains. See instru
 
 1. In the folder `mbed-client-linux-example/build/x86-linux-native/source/`, find the executable file `mbed-client-linux-example`.
 
-2. Run the executable from the command line by typing `./mbed-client-linux-example`.
+2. To run the executable from the command line, type `./mbed-client-linux-example`.
 
 3. The program begins execution and starts registration with mbed Device Connector. The console displays **Registering endpoint** and when the registration is successful it displays **Registered**.
 
-4. After a successful registration, the program will automatically start incrementing one of the resource values every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. For example, **Resource Value /Test/0/D : 1**. These values can be read from the mbed Device Connector through the Test API.
+4. After a successful registration, the program will automatically start incrementing one of the resource values every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. For example, **Resource Value /Test/0/D : 1**. You can read the values from the mbed Device Connector through the Test API.
 
 ## Testing
 
@@ -95,11 +93,11 @@ Ensure that you have the example application running on your Linux environment (
 
 2. Log in using your mbed account.
 
-3. Go to **My devices>Connected devices** to see your registered mbed Client example device.
+3. Go to **My devices -> Connected devices** to see your registered mbed Client example device.
 
 4. You can send a CoAP request to the mbed Client device with the mbed Device Connector API. To do that:
 
-	- Go to **mbed Device Connector>API Console**. 
+	- Go to **mbed Device Connector -> API Console**. 
 
 	- Click the URL to create a request. For example: `https://api.connector.mbed.com/endpoints/<MBED_ENDPOINT_NAME>/Test/0/S` creates a GET request to the static **/Test/0/S** resource.
 		- **/Test/0/D** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
