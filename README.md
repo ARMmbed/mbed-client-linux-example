@@ -2,7 +2,7 @@
 
 This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
 
-**Note:** This example is targeted for building, compiling, and running on the Linux platform only. 
+**Note:** This example is targeted for building, compiling, and running on the Linux platform only.
 
 ## Required software and setup
 
@@ -12,7 +12,7 @@ This document describes how to start using the mbed Client example application o
 
 * You may need to open UDP port 5683 or 5684 in your computer's firewall for mbed Device Connector to communicate with this example application.
 
-* If you are running Ubuntu on a virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged`. Otherwise, incoming UDP packets may start dropping after a few minutes. 
+* If you are running Ubuntu on a virtual machine, you should change your computer's Connection Settings from `NAT Firewall` to `Bridged`. Otherwise, incoming UDP packets may start dropping after a few minutes.
 
 ## Optional software
 
@@ -20,7 +20,7 @@ This document describes how to start using the mbed Client example application o
 
 ## Quick guide
 
-To run the example: 
+To run the example:
 
 1. Go to the [mbed Device Connector website](https://connector.mbed.com) and log in with your mbed.org account.
 
@@ -30,7 +30,7 @@ To run the example:
 
 4. Build the application with yotta. See the [Running and build instructions](#running-and-build-instructions) chapter for more information.
 
-## Running and build instructions		
+## Running and build instructions
 
 This example works in secure Certificate mode.
 
@@ -39,7 +39,7 @@ This example works in secure Certificate mode.
 
 You can also connect in different socket mode. To select the binding mode for the socket, change `SOCKET_MODE` between `M2MInterface::UDP` and `M2MInterface::TCP`. The instructions further in this document remain te same irrespective of the socket mode you select.
 
-### Building 
+### Building
 
 First, made sure you have installed yotta and all necessary toolchains. See instructions [here](http://yottadocs.mbed.com/#installing).
 
@@ -97,11 +97,11 @@ Ensure that you have the example application running on your Linux environment (
 
 4. You can send a CoAP request to the mbed Client device with the mbed Device Connector API. To do that:
 
-	- Go to **mbed Device Connector -> API Console**. 
+	- Go to **mbed Device Connector -> API Console**.
 
-	- Click the URL to create a request. For example: `https://api.connector.mbed.com/endpoints/<MBED_ENDPOINT_NAME>/Test/0/S` creates a GET request to the static **/Test/0/S** resource.
-		- **/Test/0/D** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one. 
-		- **/Test/0/S** represents the static resource that has a fixed value in the mbed Client. 
+	- Click the URL to create a request. For example: `https://api.connector.mbed.com/endpoints/<MBED_ENDPOINT_NAME>/Test/0/SS` creates a GET request to the static **/Test/0/SS** resource.
+		- **/Test/0/DD** represents the dynamic resource that the mbed DS can read. The example program automatically increments the resource's value every 10 seconds, displaying **Resource Value /Test/0/D : <Value>** on the console. The value starts from zero and the increments are steps of one.
+		- **/Test/0/SS** represents the static resource that has a fixed value in the mbed Client.
 
 **NOTE:** If you changed your endpoint's name (the variable `MBED_ENDPOINT_NAME` in `sources/security.h`) from the default `mbed-linux-endpoint`, you will need to change it in the above URLs as well.
 
