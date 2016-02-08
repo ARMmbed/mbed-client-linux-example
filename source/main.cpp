@@ -42,6 +42,12 @@ const String &TYPE = "type";
 const String &MODEL_NUMBER = "2015";
 const String &SERIAL_NUMBER = "12345";
 
+#ifdef YOTTA_CFG_ENDPOINT_LIFETIME
+const uint32_t updated_lifetime = YOTTA_CFG_ENDPOINT_LIFETIME;
+#else
+const uint32_t updated_lifetime = 3600;
+#endif
+
 const uint8_t value[] = "MyValue";
 const uint8_t STATIC_VALUE[] = "Static value";
 
@@ -165,7 +171,7 @@ public:
                 M2MResource* res = inst->create_dynamic_resource("D",
                                                                  "ResourceTest",
                                                                  M2MResourceInstance::INTEGER,
-                                                                 false);
+                                                                 true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                   res->set_operation(M2MBase::GET_PUT_ALLOWED);
