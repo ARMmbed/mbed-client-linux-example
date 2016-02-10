@@ -90,7 +90,7 @@ public:
        _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
                                                   "test",
-                                                  3600,
+                                                  100,
                                                   port,
                                                   MBED_USER_NAME_DOMAIN,
                                                   SOCKET_MODE,
@@ -211,7 +211,7 @@ public:
     }
 
     void test_update_register() {
-        uint32_t updated_lifetime = 3600;
+        uint32_t updated_lifetime = 100;
         if(_interface) {
             _interface->update_registration(_register_security,updated_lifetime);
         }
