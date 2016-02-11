@@ -42,12 +42,6 @@ const String &TYPE = "type";
 const String &MODEL_NUMBER = "2015";
 const String &SERIAL_NUMBER = "12345";
 
-#ifdef YOTTA_CFG_ENDPOINT_LIFETIME
-const uint32_t updated_lifetime = YOTTA_CFG_ENDPOINT_LIFETIME;
-#else
-const uint32_t updated_lifetime = 3600;
-#endif
-
 const uint8_t value[] = "MyValue";
 const uint8_t STATIC_VALUE[] = "Static value";
 
