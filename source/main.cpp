@@ -165,7 +165,7 @@ public:
                 M2MResource* res = inst->create_dynamic_resource("D",
                                                                  "ResourceTest",
                                                                  M2MResourceInstance::INTEGER,
-                                                                 false);
+                                                                 true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
                   res->set_operation(M2MBase::GET_PUT_ALLOWED);
