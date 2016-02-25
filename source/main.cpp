@@ -47,6 +47,11 @@ const uint8_t STATIC_VALUE[] = "Static value";
 
 static void ctrl_c_handle_function(void);
 typedef void (*signalhandler_t)(int); /* Function pointer type for ctrl-c */
+pthread_t unregister_thread;
+pthread_t observation_thread;
+pthread_t update_register_thread;
+volatile bool loop;
+
 
 class MbedClient: public M2MInterfaceObserver {
 public:
@@ -307,6 +312,14 @@ void* wait_for_unregister(void* arg) {
     client = (MbedClient*) arg;
     if(client->unregister_successful()) {
         printf("Unregistered done\n");
+        loop = false;
+        pthread_detach(update_register_thread);
+        pthread_detach(observation_thread);
+        pthread_detach(unregister_thread);
+
+        pthread_cancel(update_register_thread);
+        pthread_cancel(observation_thread);
+        pthread_cancel(unregister_thread);
     }
     return NULL;
 }
@@ -350,20 +363,19 @@ static void ctrl_c_handle_function(void)
     if(mbedclient && mbedclient->register_successful()) {
         printf("\nUnregistering endpoint and EXITING Program\n");
         mbedclient->test_unregister();
+    } else {
+       printf("\nEXITING Program\n");
+       exit(1);
     }
-    exit(1);
 }
 
 int main() {
-
-    pthread_t unregister_thread;
-    pthread_t observation_thread;
-    pthread_t update_register_thread;
+    loop = true;
+    signal(SIGINT, (signalhandler_t)ctrl_c_handle_function);
     MbedClient mbed_client;
 
     mbedclient = &mbed_client;
 
-    signal(SIGINT, (signalhandler_t)ctrl_c_handle_function);
     trace_init();
 
     bool result = mbed_client.create_interface();
@@ -393,12 +405,7 @@ int main() {
     pthread_create(&unregister_thread, NULL, &wait_for_unregister, (void*) &mbed_client);
     pthread_create(&update_register_thread, NULL, &update_register, (void*) &mbed_client);
 
-    pthread_join(unregister_thread, NULL);
-    pthread_join(update_register_thread, NULL);
-
-    pthread_detach(unregister_thread);
-    pthread_detach(update_register_thread);
-
+    while(loop);
     return 0;
 }
 
