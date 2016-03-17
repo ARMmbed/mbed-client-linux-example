@@ -26,7 +26,7 @@
 #include "mbed-client/m2mobjectinstance.h"
 #include "mbed-client/m2mresource.h"
 #include "security.h"
-#include "ns_trace.h"
+#include "mbed-trace/mbed_trace.h"
 
 //Select binding mode: UDP or TCP
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
@@ -376,7 +376,7 @@ int main() {
 
     mbedclient = &mbed_client;
 
-    trace_init();
+    mbed_trace_init();
 
     bool result = mbed_client.create_interface();
     if(true == result) {
