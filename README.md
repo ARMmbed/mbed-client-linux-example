@@ -53,7 +53,7 @@ First, made sure you have installed yotta and all necessary toolchains. See inst
 
 	C. Click **GET MY DEVICE SECURITY CREDENTIALS**. You will get the needed certificate information as well as the endpoint name and domain.
 
-	D. Copy the security credentials to `sources/security.h`.
+	D. Copy the security credentials to `source/security.h`.
 
 3. In the command prompt, type `yotta target x86-linux-native` to set up the target device.
 
