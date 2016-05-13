@@ -155,10 +155,15 @@ public:
 
     void execute_function(void *argument) {
         if(argument) {
-            char* arguments = (char*)argument;
-            printf("Received %s!!\n", arguments);
+            M2MResource::M2MExecuteParameter* param = (M2MResource::M2MExecuteParameter*)argument;
+            String object_name = param->get_argument_object_name();
+            uint16_t object_instance_id = param->get_argument_object_instance_id();
+            String resource_name = param->get_argument_resource_name();
+            int payload_length = param->get_argument_value_length();
+            uint8_t* payload = param->get_argument_value();
+            printf("Resource: %s/%d/%s executed\n", object_name.c_str(), object_instance_id, resource_name.c_str());
+            printf("Payload: %.*s\n", payload_length, payload);
         }
-        printf("I am executed !!\n");
     }
 
     bool create_generic_object() {
@@ -167,13 +172,15 @@ public:
         if(_object) {
             M2MObjectInstance* inst = _object->create_object_instance();
             if(inst) {
+                inst->set_operation(M2MBase::GET_PUT_POST_DELETE_ALLOWED);
+                inst->set_register_uri(true);
                 M2MResource* res = inst->create_dynamic_resource("D",
                                                                  "ResourceTest",
                                                                  M2MResourceInstance::INTEGER,
                                                                  true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
-                  res->set_operation(M2MBase::GET_PUT_ALLOWED);
+                  res->set_operation(M2MBase::GET_PUT_POST_DELETE_ALLOWED);
                   res->set_value((const uint8_t*)buffer,
                                  (const uint32_t)size);
                   res->set_execute_function(execute_callback(this,&MbedClient::execute_function));
@@ -284,14 +291,37 @@ public:
             case M2MInterface::NotAllowed:
              error_code += "M2MInterface::NotAllowed";
              break;
+            case M2MInterface::SecureConnectionFailed:
+             error_code += "M2MInterface::SecureConnectionFailed";
+             break;
+            case M2MInterface::DnsResolvingFailed:
+             error_code += "M2MInterface::DnsResolvingFailed";
+             break;
         }
         printf("\nError occured  : %s\n", error_code.c_str());
     }
 
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
-        printf("\nValue updated of Object name %s and Type %d\n",
-               base->name().c_str(), type);
-    }
+            M2MResource* resource = NULL;
+            String object_name = "";
+            String resource_name = "";
+            uint16_t object_instance_id = 0;
+            if(base) {
+                switch(base->base_type()) {
+                    case M2MBase::Resource: {
+                        resource = (M2MResource*)base;
+                        object_name = resource->object_name();
+                        object_instance_id = resource->object_instance_id();
+                        resource_name = resource->name();
+                        printf("Resource: %s/%d/%s value updated\r\n",
+                               resource->object_name().c_str(), resource->object_instance_id(), resource->name().c_str());
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
 
 private:
 
@@ -347,7 +377,7 @@ void* update_register(void* arg) {
     client = (MbedClient*) arg;
     static uint8_t counter = 0;
     while(1) {
-        sleep(20);
+        sleep(50);
         if(client->register_successful()) {
             printf("Sending update register\n");
             client->test_update_register();
