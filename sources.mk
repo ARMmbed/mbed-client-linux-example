@@ -1,0 +1,6 @@
+SRCS += \
+	source/main.cpp \
+
+
+
+

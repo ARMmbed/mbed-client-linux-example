@@ -1,15 +1,14 @@
 # #######################################
 # Usage examples:
-# make -f Makefile.standalone all
-# make -f Makefile.standalone clean
-# make -f Makefile.standalone CONFIG=thread_device CLINODE_TYPE=thread_sed CliNode
+# make -f Makefile.standalone all CC=gcc
+# make -f Makefile.standalone fetch_source
 # #######################################
 ifeq ($(OS),Windows_NT)
 $(error This does not work with Windows, use Unix/Linux/Mac OS X)
 endif
 
--include sources.mk
--include include_dirs.mk
+include sources.mk
+include include_dirs.mk
 
 ifeq (,$(CONFIG))
 CONFIG:=generic
@@ -24,16 +23,21 @@ ifeq (,$(CLINODE_TYPE))
 CLINODE_TYPE=
 endif
 
-# List of libraries to build
+# List of libraries to build with Makefile.standalone
 LIBS := \
 	mbed-client \
 	mbed-client-c \
 	mbed-client-linux \
-	mbed-client-mbed-tls \
 	mbed-trace \
 
-override CFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
-override CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+# these will be downloaded, but built with special rules
+SPECIAL_LIBS := \
+	mbed-client-mbed-tls \
+    mbedtls \
+    nanostack-libservice \
+
+override CFLAGS += $(addprefix -I$(SUBMODULE_BASE_PATH)/, $(INCLUDE_DIRS))
+override CXXFLAGS += $(addprefix -I$(SUBMODULE_BASE_PATH)/, $(INCLUDE_DIRS))
 
 
 # Create a list of objects and depencies to build
@@ -43,11 +47,11 @@ COMMON_DEPS += $(SRCS:.cpp=.d)
 # Include depencies
 -include $(COMMON_DEPS)
 
-LDFLAGS += -Lmbed-client $(addsuffix _$(CC), -lmbedclient)
-LDFLAGS += -Lmbed-client-c $(addsuffix _$(CC), -lnsdl)
-LDFLAGS += -Lmbed-client-linux $(addsuffix _$(CC), -lmbed-client-linux)
-LDFLAGS += -Lmbed-client-mbedtls $(addsuffix _$(CC), -lmbed-client-mbedtls)
-LDFLAGS += -Lmbedtls/library -lmbedtls -lmbedx509  -lmbedcrypto 
+LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client $(addsuffix _$(CC), -lmbedclient)
+LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-c $(addsuffix _$(CC), -lnsdl)
+LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-linux $(addsuffix _$(CC), -lmbed-client-linux)
+LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls $(addsuffix _$(CC), -lmbed-client-mbed-tls)
+LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbedtls/library -lmbedtls -lmbedx509  -lmbedcrypto 
 LDFLAGS += -lpthread -lrt
 
 ifeq (,$(V))
@@ -66,14 +70,10 @@ BUILDDIRS := $(LIBS:%=build-%)
 .PHONY: $(BUILDDIRS)
 $(BUILDDIRS): 
 	echo $(@:build-%=%)
-	make -C $(@:build-%=%) -f Makefile.standalone CC=gcc 
-
-.PHONY: mbedtls
-mbedtls:
-	make -C mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../config-thread-mbed-client.h>'" lib CC=gcc 
+	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone CC=gcc 
 
 .PHONY: all 
-all: $(BUILDDIRS) mbedtls
+all: $(BUILDDIRS) mbedtls-libs mbed-client-mbed-tls-libs mbed-client-linux-example
 	@echo Build OK!
 
 .PHONY: clean
@@ -90,16 +90,20 @@ export-headers:
 
 .PHONY: mbedtls-libs
 mbedtls-libs:
-	make -C mbedtls lib CC=gcc DEBUG=1 CFLAGS="-I../configs -D MBEDTLS_SSL_ALL_ALERT_MESSAGES -DMBEDTLS_CONFIG_FILE='<config-thread.h>'"
+	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../config-thread-mbed-client.h>'" lib CC=gcc 
+
+.PHONY: mbed-client-mbed-tls-libs
+mbed-client-mbed-tls-libs:
+	make -C $(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls -f Makefile CC=gcc 
 
 # create the submodule dir if one does not exist
 $(SUBMODULE_BASE_PATH):
 	mkdir -p $(SUBMODULE_BASE_PATH)
 
 # note CXX is needed for linking in the C++ code from mbed-client
-mbed-client-linux-example: $(COMMON_OBJS) $(MBEDCLINODE_OBJS) $(CLINODE_OBJS) 
+mbed-client-linux-example: $(COMMON_OBJS) mbedtls-libs mbed-client-mbed-tls-libs
 	@echo 'Linking: $@'
-	$(CXX) -o $@ $^ $(LDFLAGS)
+	$(CXX) -o $@ $(COMMON_OBJS) $(LDFLAGS)
 	@echo Done
 
 # macro for fetching the file content to a variable
@@ -128,7 +132,7 @@ GIT_HASH = $(word 2, $(subst \#, , $1))
 
 # perform a git clone of the submodules listed in $(LIBS)
 .PHONY: fetch_source
-fetch_source: $(LIBS) $(SUBMODULE_BASE_PATH)
+fetch_source: $(LIBS) $(SPECIAL_LIBS) $(SUBMODULE_BASE_PATH)
 
 CONFIGURATIONS_TO_BUILD:=$(basename $(notdir $(wildcard nanostack/source/configs/*.cfg)))
 .PHONY: test-all-builds
