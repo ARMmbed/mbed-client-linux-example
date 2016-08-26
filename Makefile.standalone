@@ -1,0 +1,130 @@
+# #######################################
+# Usage examples:
+# make -f Makefile.standalone all
+# make -f Makefile.standalone clean
+# make -f Makefile.standalone CONFIG=thread_device CLINODE_TYPE=thread_sed CliNode
+# #######################################
+ifeq ($(OS),Windows_NT)
+$(error This does not work with Windows, use Unix/Linux/Mac OS X)
+endif
+
+-include sources.mk
+-include include_dirs.mk
+
+ifeq (,$(CONFIG))
+CONFIG:=generic
+endif
+
+#CliApp type (thread_sed, thread_br, thread_thci, etc...)
+ifeq (,$(CLINODE_TYPE))
+CLINODE_TYPE=
+endif
+
+# List of libraries to build
+LIBS := \
+	mbed-client \
+	mbed-client-c \
+	mbed-client-linux \
+	mbed-client-mbed-tls \
+	mbed-trace \
+
+override CFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+override CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+
+
+# Create a list of objects and depencies to build
+COMMON_OBJS := $(SRCS:.cpp=.o)
+COMMON_DEPS += $(SRCS:.cpp=.d)
+
+# Include depencies
+-include $(COMMON_DEPS)
+
+LDFLAGS += -Lmbed-client $(addsuffix _$(CC), -lmbedclient)
+LDFLAGS += -Lmbed-client-c $(addsuffix _$(CC), -lnsdl)
+LDFLAGS += -Lmbed-client-linux $(addsuffix _$(CC), -lmbed-client-linux)
+LDFLAGS += -Lmbed-client-mbedtls $(addsuffix _$(CC), -lmbed-client-mbedtls)
+LDFLAGS += -Lmbedtls/library -lmbedtls -lmbedx509  -lmbedcrypto 
+LDFLAGS += -lpthread -lrt
+
+ifeq (,$(V))
+VERBOSE:= @
+endif
+
+%.o:%.c
+	@echo $<
+	$(VERBOSE) $(CC) $(CFLAGS) -o $@ -c $<
+
+%.o:%.cpp
+	@echo $<
+	$(VERBOSE) $(CXX) $(CXXFLAGS) -o $@ -c $<
+
+BUILDDIRS := $(LIBS:%=build-%)
+.PHONY: $(BUILDDIRS)
+$(BUILDDIRS): 
+	echo $(@:build-%=%)
+	make -C $(@:build-%=%) -f Makefile.standalone CC=gcc 
+
+.PHONY: mbedtls
+mbedtls:
+	make -C mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../config-thread-mbed-client.h>'" lib CC=gcc 
+
+.PHONY: all 
+all: $(BUILDDIRS) mbedtls
+	@echo Build OK!
+
+.PHONY: clean
+clean: simulator-clean CliNode-clean
+
+
+.PHONY: external-libs
+external-libs: export-headers
+	make -f build_external_libs.mk CC=gcc DEBUG=1 COVERAGE=$(COVERAGE) CONFIG=$(CONFIG)
+
+
+.PHONY: export-headers
+export-headers:
+	make -C libService export-headers
+
+.PHONY: mbedtls-libs
+mbedtls-libs:
+	make -C mbedtls lib CC=gcc DEBUG=1 CFLAGS="-I../configs -D MBEDTLS_SSL_ALL_ALERT_MESSAGES -DMBEDTLS_CONFIG_FILE='<config-thread.h>'"
+
+
+# note CXX is needed for linking in the C++ code from mbed-client
+mbed-client-linux-example: $(COMMON_OBJS) $(MBEDCLINODE_OBJS) $(CLINODE_OBJS) 
+	@echo 'Linking: $@'
+	$(CXX) -o $@ $^ $(LDFLAGS)
+	@echo Done
+
+# macro for fetching the file content to a variable
+LIB_CONTENT = $(shell cat $1)
+
+GIT_URL = $(word 1, $(subst \#, , $1))
+GIT_HASH = $(word 2, $(subst \#, , $1))
+
+# Rule for processing the mbed-cli's submodule reference files (.lib).
+# The lib files contain a <repository-git-url>#<commit-hash> as a string
+# which is extracted and used for "git clone" + "git checkout" commands
+% : %.lib
+	if [ -d $@ ]; then \
+		echo Just update the repository && \
+		pwd &&\
+		cd $@ && \
+		git fetch; \
+	else \
+		echo Clone the repository && \
+		pwd && \
+		git clone $(call GIT_URL, $(call LIB_CONTENT, $<)) && \
+		cd $@; \
+	fi; \
+	git checkout $(call GIT_HASH, $(call LIB_CONTENT, $<))
+
+# perform a git clone of the submodules listed in $(LIBS)
+.PHONY: fetch_source
+fetch_source: $(LIBS)
+
+CONFIGURATIONS_TO_BUILD:=$(basename $(notdir $(wildcard nanostack/source/configs/*.cfg)))
+.PHONY: test-all-builds
+test-all-builds:
+	@echo Build Configs: $(CONFIGURATIONS_TO_BUILD)
+
