@@ -44,6 +44,13 @@ COMMON_DEPS += $(SRCS:.cpp=.d)
 # Include depencies
 -include $(COMMON_DEPS)
 
+#
+# Define compiler toolchain
+#
+include libService/toolchain_rules.mk
+
+$(eval $(call generate_rules,$(LIB),$(SRCS)))
+
 LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client $(addsuffix _$(CC), -lmbedclient)
 LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-c $(addsuffix _$(CC), -lnsdl)
 LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-linux $(addsuffix _$(CC), -lmbed-client-linux)
@@ -69,6 +76,20 @@ $(BUILDDIRS):
 	echo $(@:build-%=%)
 	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
 
+# Note: the correct CC is needed as parameter as the library names are also constructed uring it,
+# eg. libnsdl.a is actually libnsdl_gcc.a on GCC compilation.
+CLEANDIRS := $(LIBS:%=clean-%)
+.PHONY: $(CLEANDIRS)
+$(CLEANDIRS): 
+	echo $(@:clean-%=%)
+	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile.standalone clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
+
+CLEAN_SPECIAL_DIRS := $(SPECIAL_LIBS:%=clean-%)
+.PHONY: $(CLEAN_SPECIAL_DIRS)
+$(CLEAN_SPECIAL_DIRS): 
+	echo $(@:clean-%=%)
+	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
+
 FETCH_SUB_MODULES := $(LIBS:%=fetch-%)
 .PHONY: $(FETCH_SUB_MODULES)
 $(FETCH_SUB_MODULES): $(SUBMODULE_BASE_PATH)
@@ -80,8 +101,11 @@ all: $(SUBMODULE_BASE_PATH) $(TARGET_MODULES) $(BUILDDIRS) mbedtls-libs mbed-cli
 	@echo Build OK!
 
 .PHONY: clean
-clean: simulator-clean CliNode-clean
+clean: $(CLEANDIRS) mbed-client-linux-example-clean
 
+mbed-client-linux-example-clean:
+	-$(RM) $(COMMON_OBJS)
+	-$(RM) mbed-client-linux-example
 
 .PHONY: external-libs
 external-libs: export-headers
