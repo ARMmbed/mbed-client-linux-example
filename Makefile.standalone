@@ -37,7 +37,6 @@ SPECIAL_LIBS := \
 override CFLAGS += $(addprefix -I$(SUBMODULE_BASE_PATH)/, $(INCLUDE_DIRS))
 override CXXFLAGS += $(addprefix -I$(SUBMODULE_BASE_PATH)/, $(INCLUDE_DIRS))
 
-
 # Create a list of objects and depencies to build
 COMMON_OBJS := $(SRCS:.cpp=.o)
 COMMON_DEPS += $(SRCS:.cpp=.d)
@@ -68,13 +67,13 @@ BUILDDIRS := $(LIBS:%=build-%)
 .PHONY: $(BUILDDIRS)
 $(BUILDDIRS): 
 	echo $(@:build-%=%)
-	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=gcc 
+	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
 
 FETCH_SUB_MODULES := $(LIBS:%=fetch-%)
 .PHONY: $(FETCH_SUB_MODULES)
 $(FETCH_SUB_MODULES): $(SUBMODULE_BASE_PATH)
 	@echo $@
-	make -C $(SUBMODULE_BASE_PATH)/$(@:fetch-%=%) -f Makefile.standalone fetch_source SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=gcc 
+	make -C $(SUBMODULE_BASE_PATH)/$(@:fetch-%=%) -f Makefile.standalone fetch_source SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) 
 
 .PHONY: all 
 all: $(SUBMODULE_BASE_PATH) $(TARGET_MODULES) $(BUILDDIRS) mbedtls-libs mbed-client-mbed-tls-libs mbed-client-linux-example
@@ -86,7 +85,7 @@ clean: simulator-clean CliNode-clean
 
 .PHONY: external-libs
 external-libs: export-headers
-	make -f build_external_libs.mk CC=gcc DEBUG=1 COVERAGE=$(COVERAGE) CONFIG=$(CONFIG)
+	make -f build_external_libs.mk CC=$(CC) DEBUG=1 COVERAGE=$(COVERAGE) CONFIG=$(CONFIG)
 
 .PHONY: export-headers
 export-headers:
@@ -94,11 +93,11 @@ export-headers:
 
 .PHONY: mbedtls-libs
 mbedtls-libs:
-	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../../config-thread-mbed-client.h>'" lib CC=gcc 
+	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../../config-thread-mbed-client.h>'" lib CC=$(CC) 
 
 .PHONY: mbed-client-mbed-tls-libs
 mbed-client-mbed-tls-libs:
-	make -C $(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls -f Makefile CC=gcc 
+	make -C $(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls -f Makefile CC=$(CC) 
 
 # create the submodule dir if one does not exist
 $(SUBMODULE_BASE_PATH):
