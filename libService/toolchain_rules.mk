@@ -123,7 +123,13 @@ else ifneq (,$(findstring iccarm,$(CC)))
 	AR:=iarchive
 	AROPTS=$^ --create -o $@
 	DLIB_FILE=$(subst bin\iccarm.exe,inc\c\DLib_Config_Full.h,$(shell where iccarm))
-	override CFLAGS += --dlib_config '$(DLIB_FILE)' --cpu Cortex-M4 --vla --diag_suppress Pa50
+	override CFLAGS += --dlib_config '$(DLIB_FILE)' --vla --diag_suppress Pa50
+	ifneq (,$(CPU))
+		override CFLAGS += --cpu $(CPU)
+		ifeq (Cortex-M,$(findstring Cortex-M,$(CPU)))
+		override CFLAGS += --thumb
+		endif
+	endif
 	# Dependency generation
 	override CFLAGS += --dependencies=m $(basename $@).d
 	# Debug
