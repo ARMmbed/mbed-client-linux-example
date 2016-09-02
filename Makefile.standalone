@@ -74,7 +74,7 @@ BUILDDIRS := $(LIBS:%=build-%)
 .PHONY: $(BUILDDIRS)
 $(BUILDDIRS): 
 	echo $(@:build-%=%)
-	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
+	make -C $(SUBMODULE_BASE_PATH)/$(@:build-%=%) -f Makefile.standalone SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) CPU=$(CPU)
 
 # Note: the correct CC is needed as parameter as the library names are also constructed uring it,
 # eg. libnsdl.a is actually libnsdl_gcc.a on GCC compilation.
@@ -82,19 +82,19 @@ CLEANDIRS := $(LIBS:%=clean-%)
 .PHONY: $(CLEANDIRS)
 $(CLEANDIRS): 
 	echo $(@:clean-%=%)
-	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile.standalone clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
+	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile.standalone clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) CPU=$(CPU)
 
 CLEAN_SPECIAL_DIRS := $(SPECIAL_LIBS:%=clean-%)
 .PHONY: $(CLEAN_SPECIAL_DIRS)
 $(CLEAN_SPECIAL_DIRS): 
 	echo $(@:clean-%=%)
-	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC)
+	make -C $(SUBMODULE_BASE_PATH)/$(@:clean-%=%) -f Makefile clean SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) CPU=$(CPU)
 
 FETCH_SUB_MODULES := $(LIBS:%=fetch-%)
 .PHONY: $(FETCH_SUB_MODULES)
 $(FETCH_SUB_MODULES): $(SUBMODULE_BASE_PATH)
 	@echo $@
-	make -C $(SUBMODULE_BASE_PATH)/$(@:fetch-%=%) -f Makefile.standalone fetch_source SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) 
+	make -C $(SUBMODULE_BASE_PATH)/$(@:fetch-%=%) -f Makefile.standalone fetch_source SUBMODULE_BASE_PATH=$(SUBMODULE_BASE_PATH) CC=$(CC) CPU=$(CPU)
 
 .PHONY: all 
 all: $(SUBMODULE_BASE_PATH) $(TARGET_MODULES) $(BUILDDIRS) mbedtls-libs mbed-client-mbed-tls-libs mbed-client-linux-example
@@ -117,7 +117,7 @@ export-headers:
 
 .PHONY: mbedtls-libs
 mbedtls-libs:
-	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../../config-thread-mbed-client.h>'" lib CC=$(CC) 
+	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../../config-thread-mbed-client.h>'" lib CC=$(CC) CPU=$(CPU)
 
 .PHONY: mbed-client-mbed-tls-libs
 mbed-client-mbed-tls-libs:
