@@ -15,14 +15,21 @@
  */
 #ifndef __SECURITY_H__
 #define __SECURITY_H__
-
+ 
 #include <inttypes.h>
-
-#define MBED_DOMAIN ""
-#define MBED_ENDPOINT_NAME "mbed-linux-endpoint"
-
-const uint8_t SERVER_CERT[] = "";
-const uint8_t CERT[] = "";
-const uint8_t KEY[] = "";
-
+ 
+#define MBED_DOMAIN "DOMAIN"
+#define MBED_ENDPOINT_NAME "ENDPOINT_NAME"
+ 
+const uint8_t SERVER_CERT[] = "-----BEGIN CERTIFICATE-----\r\n"
+"-----END CERTIFICATE-----\r\n";
+ 
+const uint8_t CERT[] = "-----BEGIN CERTIFICATE-----\r\n"
+"-----END CERTIFICATE-----\r\n";
+ 
+const uint8_t KEY[] = "-----BEGIN PRIVATE KEY-----\r\n"
+"-----END PRIVATE KEY-----\r\n";
+ 
 #endif //__SECURITY_H__
+ 
+#error "You need to get security.h credentials from connector.mbed.com and replace the content of this security.h file"
