@@ -25,6 +25,7 @@
 #include "mbed-client/m2minterface.h"
 #include "mbed-client/m2mobjectinstance.h"
 #include "mbed-client/m2mresource.h"
+#include "mbed-client/m2mblockmessage.h"
 #include "security.h"
 #include "mbed-trace/mbed_trace.h"
 
@@ -36,7 +37,6 @@ const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com:5684";
 
 const String &MBED_USER_NAME_DOMAIN = MBED_DOMAIN;
 const String &ENDPOINT_NAME = MBED_ENDPOINT_NAME;
-
 const String &MANUFACTURER = "manufacturer";
 const String &TYPE = "type";
 const String &MODEL_NUMBER = "2015";
@@ -65,6 +65,8 @@ public:
         _unregistered = false;
         _registration_updated = false;
         _value = 0;
+        _block_message = NULL;
+        _block_message_len = 0;
     }
 
     ~MbedClient() {
@@ -83,14 +85,17 @@ public:
         if(_interface) {
             delete _interface;
         }
+        if(_block_message) {
+            delete _block_message;
+        }
     }
 
     bool create_interface() {
 
        time_t t;
        srand((unsigned) time(&t));
-
-       uint16_t port = rand() % 65535 + 12345;
+       // Port range from 1024 up to uint16
+       uint16_t port = rand() % 64511 + 1024;
 
        _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
@@ -180,10 +185,12 @@ public:
                                                                  true);
                 char buffer[20];
                 int size = sprintf(buffer,"%d",_value);
-                  res->set_operation(M2MBase::GET_PUT_POST_DELETE_ALLOWED);
-                  res->set_value((const uint8_t*)buffer,
-                                 (const uint32_t)size);
-                  res->set_execute_function(execute_callback(this,&MbedClient::execute_function));
+                res->set_operation(M2MBase::GET_PUT_POST_DELETE_ALLOWED);
+                res->set_value((const uint8_t*)buffer,
+                             (const uint32_t)size);
+                res->set_execute_function(execute_callback(this,&MbedClient::execute_function));
+                res->set_incoming_block_message_callback(incoming_block_message_callback(this, &MbedClient::block_message_received));
+                res->set_outgoing_block_message_callback(outgoing_block_message_callback(this, &MbedClient::block_message_requested));
                 _value++;
                 inst->create_static_resource("S",
                                              "ResourceTest",
@@ -214,12 +221,12 @@ public:
         M2MObjectList object_list;
         object_list.push_back(_device);
         object_list.push_back(_object);
-    if(_interface) {
+        if(_interface) {
             _interface->register_object(_register_security,object_list);
         } else {
-        printf("Interface doesn't exist, exiting!!\n");
+            printf("Interface doesn't exist, exiting!!\n");
             exit(1);
-    }
+        }
     }
 
     void test_update_register() {
@@ -257,71 +264,109 @@ public:
     void error(M2MInterface::Error error){
         _error = true;
         String error_code;
-	switch(error) {
-        case M2MInterface::ErrorNone:
-             error_code += "M2MInterface::ErrorNone";
-             break;
+        switch(error) {
+            case M2MInterface::ErrorNone:
+                error_code += "M2MInterface::ErrorNone";
+                break;
             case M2MInterface::AlreadyExists:
-             error_code += "M2MInterface::AlreadyExists";
-             break;
+                error_code += "M2MInterface::AlreadyExists";
+                break;
             case M2MInterface::BootstrapFailed:
-             error_code += "M2MInterface::BootstrapFailed";
-             break;
+                error_code += "M2MInterface::BootstrapFailed";
+                break;
             case M2MInterface::InvalidParameters:
-             error_code += "M2MInterface::InvalidParameters";
-             break;
+                error_code += "M2MInterface::InvalidParameters";
+                break;
             case M2MInterface::NotRegistered:
-             error_code += "M2MInterface::NotRegistered";
-             break;
+                error_code += "M2MInterface::NotRegistered";
+                break;
             case M2MInterface::Timeout:
-             error_code += "M2MInterface::Timeout";
-             break;
+                error_code += "M2MInterface::Timeout";
+                break;
             case M2MInterface::NetworkError:
-             error_code += "M2MInterface::NetworkError";
-             break;
+                error_code += "M2MInterface::NetworkError";
+                break;
             case M2MInterface::ResponseParseFailed:
-             error_code += "M2MInterface::ResponseParseFailed";
-             break;
+                error_code += "M2MInterface::ResponseParseFailed";
+                break;
             case M2MInterface::UnknownError:
-             error_code += "M2MInterface::UnknownError";
-             break;
+                error_code += "M2MInterface::UnknownError";
+                break;
             case M2MInterface::MemoryFail:
-             error_code += "M2MInterface::MemoryFail";
-             break;
+                error_code += "M2MInterface::MemoryFail";
+                break;
             case M2MInterface::NotAllowed:
-             error_code += "M2MInterface::NotAllowed";
-             break;
+                error_code += "M2MInterface::NotAllowed";
+                break;
             case M2MInterface::SecureConnectionFailed:
-             error_code += "M2MInterface::SecureConnectionFailed";
-             break;
+                error_code += "M2MInterface::SecureConnectionFailed";
+                break;
             case M2MInterface::DnsResolvingFailed:
-             error_code += "M2MInterface::DnsResolvingFailed";
-             break;
-        }
+                error_code += "M2MInterface::DnsResolvingFailed";
+                break;
+            }
         printf("\nError occured  : %s\n", error_code.c_str());
     }
 
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
-            M2MResource* resource = NULL;
-            String object_name = "";
-            String resource_name = "";
-            uint16_t object_instance_id = 0;
-            if(base) {
-                switch(base->base_type()) {
-                    case M2MBase::Resource: {
-                        resource = (M2MResource*)base;
-                        object_name = resource->object_name();
-                        object_instance_id = resource->object_instance_id();
-                        resource_name = resource->name();
-                        printf("Resource: %s/%d/%s value updated\r\n",
-                               resource->object_name().c_str(), resource->object_instance_id(), resource->name().c_str());
-                    }
-                    break;
-                default:
-                    break;
+        M2MResource* resource = NULL;
+        String object_name = "";
+        String resource_name = "";
+        uint16_t object_instance_id = 0;
+        if(base) {
+            switch(base->base_type()) {
+                case M2MBase::Resource: {
+                    resource = (M2MResource*)base;
+                    object_name = resource->object_name();
+                    object_instance_id = resource->object_instance_id();
+                    resource_name = resource->name();
+                    printf("Resource: %s/%d/%s value updated\r\n",
+                           resource->object_name().c_str(), resource->object_instance_id(), resource->name().c_str());
                 }
+                break;
+            default:
+                break;
             }
         }
+    }
+
+    void block_message_received(M2MBlockMessage *argument) {
+        if (argument) {
+            if (M2MBlockMessage::ErrorNone == argument->error_code()) {
+                if (argument->is_last_block()) {
+                    printf("Last block received\r\n");
+                }
+                printf("Block number: %d\r\n", argument->block_number());
+                printf("Total message size: %d\r\n", argument->total_message_size());
+                // First block arrived
+                if (argument->block_number() == 0) {
+                    free(_block_message);
+                    _block_message = NULL;
+                    _block_message_len = argument->total_message_size();
+                    _block_message = (uint8_t*)malloc(_block_message_len);
+                    if (_block_message) {
+                        memcpy(_block_message, argument->block_data(), argument->block_data_len());
+                    }
+                } else {
+                    if (_block_message) {
+                        // Combine blocks
+                        memcpy(_block_message + (argument->block_data_len() * argument->block_number()),
+                               argument->block_data(),
+                               argument->block_data_len());
+                    }
+                }
+            } else {
+                printf("Error when receiving block message! %d\r\n", argument->error_code());
+            }
+        }
+    }
+
+    void block_message_requested(const String& resource, uint8_t *&data, uint32_t &len) {
+        printf("GET request received for resource: %s\r\n", resource.c_str());
+        data = (uint8_t*)malloc(_block_message_len);
+        len = _block_message_len;
+        memcpy(data, _block_message, _block_message_len);
+    }
 
 private:
 
@@ -335,6 +380,8 @@ private:
     bool                _unregistered;
     bool                _registration_updated;
     int                 _value;
+    uint8_t             *_block_message;
+    uint32_t            _block_message_len;
 };
 
 void* wait_for_unregister(void* arg) {
