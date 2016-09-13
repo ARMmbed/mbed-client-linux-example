@@ -1,7 +1,11 @@
 # #######################################
 # Usage examples:
-# make -f Makefile.standalone all CC=gcc
-# make -f Makefile.standalone fetch_source
+#
+# Fetch the submodules needed for compilation:
+#   make -f Makefile.standalone fetch_source
+#
+# Compile example application and its dependencies:
+#   make -f Makefile.standalone mbed-client-linux-example CC=gcc
 # #######################################
 ifeq ($(OS),Windows_NT)
 $(error This does not work with Windows, use Unix/Linux/Mac OS X)
@@ -12,6 +16,10 @@ include include_dirs.mk
 
 ifeq (,$(CONFIG))
 CONFIG:=generic
+endif
+
+ifeq (,$(V))
+VERBOSE:= @
 endif
 
 # Set the target path where submodules will be deployed to,
@@ -61,20 +69,9 @@ LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls $(addsuffix _$(CC), -lm
 LDFLAGS += -L$(SUBMODULE_BASE_PATH)/mbedtls/library -lmbedtls -lmbedx509  -lmbedcrypto 
 LDFLAGS += -lpthread -lrt
 
-ifeq (,$(V))
-VERBOSE:= @
-endif
-
-%.o:%.c
-	@echo $<
-	$(VERBOSE) $(CC) $(CFLAGS) -o $@ -c $<
-
-%.o:%.cpp
-	@echo $<
-	$(VERBOSE) $(CXX) $(CXXFLAGS) -o $@ -c $<
 
 .PHONY: all 
-all: $(SUBMODULE_BASE_PATH) $(TARGET_MODULES) $(BUILDDIRS) mbedtls-libs mbed-client-mbed-tls-libs mbed-client-linux-example
+all: $(SUBMODULE_BASE_PATH) $(TARGET_MODULES) $(BUILDDIRS) mbedtls-libs mbed-client-linux-example
 	@echo Build OK!
 
 .PHONY: clean
@@ -84,28 +81,16 @@ mbed-client-linux-example-clean:
 	-$(RM) $(COMMON_OBJS)
 	-$(RM) mbed-client-linux-example
 
-.PHONY: external-libs
-external-libs: export-headers
-	make -f build_external_libs.mk CC=$(CC) DEBUG=1 COVERAGE=$(COVERAGE) CONFIG=$(CONFIG)
-
-.PHONY: export-headers
-export-headers:
-	make -C libService export-headers
-
 .PHONY: mbedtls-libs
 mbedtls-libs:
 	make -C $(SUBMODULE_BASE_PATH)/mbedtls -f Makefile CFLAGS="-DMBEDTLS_CONFIG_FILE='<../../../config-thread-mbed-client.h>'" lib CC=$(CC) CPU=$(CPU)
-
-.PHONY: mbed-client-mbed-tls-libs
-mbed-client-mbed-tls-libs:
-	make -C $(SUBMODULE_BASE_PATH)/mbed-client-mbed-tls -f Makefile CC=$(CC) 
 
 # create the submodule dir if one does not exist
 $(SUBMODULE_BASE_PATH):
 	mkdir -p $(SUBMODULE_BASE_PATH)
 
 # note CXX is needed for linking in the C++ code from mbed-client
-mbed-client-linux-example: $(TARGET_MODULES) $(BUILDDIRS) $(COMMON_OBJS) mbedtls-libs mbed-client-mbed-tls-libs
+mbed-client-linux-example: $(TARGET_MODULES) $(BUILDDIRS) $(COMMON_OBJS) mbedtls-libs
 	@echo 'Linking: $@'
 	$(CXX) -o $@ $(COMMON_OBJS) $(LDFLAGS)
 	@echo Done
@@ -120,8 +105,4 @@ $(TARGET_MODULES): | $(SUBMODULE_BASE_PATH)
 .PHONY: fetch_source
 fetch_source: $(TARGET_MODULES) $(FETCH_SUB_MODULES)
 
-CONFIGURATIONS_TO_BUILD:=$(basename $(notdir $(wildcard nanostack/source/configs/*.cfg)))
-.PHONY: test-all-builds
-test-all-builds:
-	@echo Build Configs: $(CONFIGURATIONS_TO_BUILD)
 
