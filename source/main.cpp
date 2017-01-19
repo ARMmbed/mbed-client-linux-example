@@ -309,24 +309,8 @@ public:
     }
 
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
-        M2MResource* resource = NULL;
-        String object_name = "";
-        String resource_name = "";
-        uint16_t object_instance_id = 0;
         if(base) {
-            switch(base->base_type()) {
-                case M2MBase::Resource: {
-                    resource = (M2MResource*)base;
-                    object_name = resource->object_name();
-                    object_instance_id = resource->object_instance_id();
-                    resource_name = resource->name();
-                    printf("Resource: %s/%d/%s value updated\r\n",
-                           resource->object_name().c_str(), resource->object_instance_id(), resource->name().c_str());
-                }
-                break;
-            default:
-                break;
-            }
+            printf("Resource: %s value updated\r\n", base->uri_path());
         }
     }
 
