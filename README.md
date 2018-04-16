@@ -1,3 +1,9 @@
+## Deprecation note!
+
+**Please note: this repository is deprecated and is no longer actively maintained**.
+
+However, there is a new reference example as part of Arm's [Mbed Cloud](https://cloud.mbed.com/docs/current) offering and the application code is available via [Mbed Cloud Client Example](https://github.com/ARMmbed/mbed-cloud-client-example) repository.
+
 # Getting Started with mbed Client on Linux
 
 This document describes how to start using the mbed Client example application on Linux. The mbed Client example application demonstrates how to register to mbed Device Connector, read resource values and deregister from it.
